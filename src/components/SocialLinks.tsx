@@ -18,11 +18,10 @@ const GithubIcon = (
   </svg>
 );
 
-// Swap these for your real links.
 const LINKS = [
   { href: 'https://pump.fun', label: 'Pump.fun', icon: PumpIcon },
-  { href: 'https://x.com', label: 'X', icon: XIcon },
-  { href: 'https://github.com', label: 'GitHub', icon: GithubIcon },
+  { href: 'https://x.com/playThronglets', label: 'X', icon: XIcon },
+  { href: 'https://github.com/playThronglets/Thronglets', label: 'GitHub', icon: GithubIcon },
 ];
 
 export function SocialLinks() {
