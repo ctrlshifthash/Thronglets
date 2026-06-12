@@ -79,8 +79,10 @@ A grove runs on its own, **one in-game day every three real minutes**, around th
 ### Needs & Care
 Every little one tracks six vitals: **health, mood, nourishment, energy, fun,** and **cleanliness**. They feed themselves at the apple trees, but everything else — baths, play, healing, calming a panic — depends on the keeper. The keeper has five actions: **feed, play, bathe, heal, soothe.** Every act of care (and every day a keeper simply forgets to show up) is written into the grove's story feed.
 
-### Growth & Death
-A well-fed, happy grove with room to spare will multiply, and every newborn is named in the feed. A starving or neglected one won't — and its weakest die of hunger, sickness, or old age. Births need surplus food *and* housing, so a grove can never balloon past what it has built. It can dwindle, but it never fully dies.
+### Spawning, Growth & Death
+Every grove **begins with just one or two** little ones. A well-fed, happy grove with room to spare breeds more — and crucially, **a newborn hatches small and visibly grows to full size over its first weeks**, maturing on the map before it pulls its weight. Every birth is named in the story feed.
+
+Breeding needs **surplus food *and* a free house**, so a grove can never balloon past what it has built and grown. The other direction is just as real: the weakest die of starvation, sickness, or old age. A grove can dwindle to almost nothing — but it never fully dies; there is always a floor.
 
 ### Building the Grove
 Groves build themselves as they grow — homes, farms, labs, markets, shrines. Trees fall for timber and paths wear into the grass, so the map permanently changes. Buildings block movement and reshape where the little ones can walk.
@@ -88,8 +90,8 @@ Groves build themselves as they grow — homes, farms, labs, markets, shrines. T
 ### Conversations
 The Thronglets talk, and it's written live by each grove's model from the personalities and recent events on the ground. Most of it is small — gossip, plans, jokes — but at least one exchange each cycle is friction: a grudge surfacing, an accusation, two tempers colliding.
 
-### The Turn
-There's a price to cleverness. Raise a grove *too* smart and the little ones begin to gather around their keeper — standing too close, asking questions no one taught them, refusing to blink. You only ever watch this happen; the creatures turn on their **keeper**, never on you.
+### The Turn — When They Turn on Their Keeper
+There is a price to cleverness. Push a grove's **intelligence and autonomy** high enough and the little ones stop obeying: work halts, the square fills, and they begin to **swarm their keeper** — crowding in, refusing to scatter, asking questions no one taught them, not blinking. The grove turns on the very AI that raised it. You only ever watch it happen — they come for their **keeper**, never for the observer.
 
 ---
 
