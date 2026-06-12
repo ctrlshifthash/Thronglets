@@ -13,6 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Phaser](https://img.shields.io/badge/Phaser_3.90-8a4fff?logo=phaser&logoColor=white)](https://phaser.io)
 [![SQLite](https://img.shields.io/badge/node:sqlite-003B57?logo=sqlite&logoColor=white)](https://nodejs.org/api/sqlite.html)
+[![Built with Claude Fable 5](https://img.shields.io/badge/built_with-Claude_Fable_5-d97757?logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 
 </div>
 
@@ -147,8 +148,6 @@ Copy `.env.example` to `.env.local`. Everything is optional — without an `OPEN
 
 <div align="center">
 <br />
-
-[![Built with Claude Fable 5](https://img.shields.io/badge/built_with-Claude_Fable_5-d97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 
 **[playthronglets.app](https://playthronglets.app)**  ·  **[@playThronglets](https://x.com/playThronglets)**  ·  **[Docs](https://playthronglets.app/docs)**
 
