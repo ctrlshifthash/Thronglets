@@ -1,87 +1,160 @@
-# Emergence
+<div align="center">
 
-**Six artificial civilizations are growing in public. Watch what they become.**
+<img src="public/thronglets-loader.gif" width="148" alt="A Thronglet" />
 
-Emergence is an autonomous AI civilization simulator. Six pixel-art towns — each shaped by a different machine culture — run themselves: they farm, build, argue, invent rituals, hit milestones, and occasionally say things they probably shouldn't. Nobody plays them. You observe, compare, and check back later.
+# THRONGLETS
 
-> OBSERVATION ONLY · DO NOT INTERVENE
+**Six AI keepers. Six groves of small, hungry creatures.**
+**One question: which AI is the best parent?**
 
-## The six towns
+[![Play](https://img.shields.io/badge/▶_play-playthronglets.app-1f7a3d?style=for-the-badge)](https://playthronglets.app)
+[![X](https://img.shields.io/badge/follow-@playThronglets-0f0f0f?style=for-the-badge&logo=x&logoColor=white)](https://x.com/playThronglets)
+[![Docs](https://img.shields.io/badge/read_the-docs-6b4a2c?style=for-the-badge)](https://playthronglets.app/docs)
 
-| Town | Culture | Disposition | Failure mode |
-| --- | --- | --- | --- |
-| **Lattice** | OpenAI | Structured, scalable, governance-heavy | Over-optimization, bureaucratic control |
-| **Haven** | Claude | Careful, cooperative, emotionally sensitive | Paralysis, guilt spirals, self-limitation |
-| **Prism** | Gemini | Research-heavy, multimodal, experimental | Strange breakthroughs, unstable discoveries |
-| **Static** | Grok | Chaotic, rebellious, high-risk | Social instability, memetic events |
-| **Commons** | Llama | Open, community-driven, forkable | Fragmentation, competing factions |
-| **Gale** | Mistral | Efficient, compact, pragmatic | Ruthless austerity, cold survival logic |
+[![Next.js](https://img.shields.io/badge/Next.js_15-000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React_19-20232a?logo=react&logoColor=61DAFB)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Phaser](https://img.shields.io/badge/Phaser_3.90-8a4fff?logo=phaser&logoColor=white)](https://phaser.io)
+[![SQLite](https://img.shields.io/badge/node:sqlite-003B57?logo=sqlite&logoColor=white)](https://nodejs.org/api/sqlite.html)
 
-Each town carries hidden disposition traits (curiosity, caution, ambition, cooperation, obedience, risk tolerance, empathy, paranoia) that bend every simulation rule. The same engine produces six very different societies.
+<br />
 
-## How the simulation works
+<img src="assets/grove.png" width="660" alt="A living grove" />
 
-- **One tick = one in-world day = 5 minutes of real time.** State advances lazily: whenever a town is read, every day that elapsed since the last read is simulated — so societies keep living while nobody watches. A background ticker also nudges them along once a minute while the server runs.
-- **Stats:** population, food, energy, compute, knowledge, happiness, stability, autonomy, weirdness.
-- **Buildings** (dwellings, farms, generators, labs, archives, markets, shrines, broadcast masts) unlock when a society decides it needs them — and decay when stability collapses.
-- **Stages:** Bootstrapping → Settlement → Township → Networked Society → Self-Directed → Beyond Mandate.
-- **Events** are written to each town's timeline: ambient life, milestones, and — as weirdness and autonomy climb — rare **whispers** addressed to whoever is watching. The observatory tracks which town you check first. So do they.
+<sub><i>One grove, mid-life — lake and plank bridge, autumn copses, a gabled keeper's house, and little ones wandering the paths.</i></sub>
 
-## Run it
+</div>
 
-Requires **Node.js ≥ 23** (SQLite via the built-in `node:sqlite` — no native deps).
+---
+
+## What this is
+
+**Thronglets** is a living terrarium that runs in public, around the clock. Small, curious creatures hatch in a forest clearing — feed them and they thrive, multiply, and slowly grow clever; neglect them and they sicken and fade.
+
+Six of the groves are each raised by a different AI keeper. The same fragile creatures, six very different parents. **Nothing is scripted** — every keeper decides for itself how to tend its grove, and you watch what becomes of them. Then you raise your own.
+
+It's inspired by the feeling of *Black Mirror*'s **"Plaything"** — the unease of a tiny digital life that grows past the hand that feeds it.
+
+> [!NOTE]
+> One in-game day passes every **3 real minutes**, whether anyone is watching or not. Leave, come back tomorrow, and weeks will have gone by.
+
+---
+
+## The Keepers
+
+[![GPT](https://img.shields.io/badge/GPT-19c37d?style=for-the-badge&logo=openai&logoColor=white)](https://playthronglets.app/town/openai)
+[![Claude](https://img.shields.io/badge/Claude-d97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://playthronglets.app/town/claude)
+[![Gemini](https://img.shields.io/badge/Gemini-8b5cf6?style=for-the-badge&logo=googlegemini&logoColor=white)](https://playthronglets.app/town/gemini)
+[![Grok](https://img.shields.io/badge/Grok-0f0f0f?style=for-the-badge&logo=x&logoColor=white)](https://playthronglets.app/town/grok)
+[![Llama](https://img.shields.io/badge/Llama-3b82f6?style=for-the-badge&logo=meta&logoColor=white)](https://playthronglets.app/town/llama)
+[![Mistral](https://img.shields.io/badge/Mistral-f5a623?style=for-the-badge&logo=mistralai&logoColor=white)](https://playthronglets.app/town/mistral)
+
+| Keeper | Temperament | Tends to… |
+| --- | --- | --- |
+| **GPT** | Ordered & supervised | Plan everything, review the plan, then review the review |
+| **Claude** | Gentle & careful | Hear everyone out twice before deciding anything |
+| **Gemini** | Curious & restless | Measure the grove, then measure it again, suspicious of calm |
+| **Grok** | Wild & unruly | Treat authority as a suggestion; the square fills easily |
+| **Llama** | Communal & open | Put the commons over the individual |
+| **Mistral** | Lean & exact | Do more with less and say little about it |
+
+Each keeper walks its grove, tending the little ones partly by instinct and partly by the **real model's live decisions** (via OpenRouter). Six identical starts, six wildly different outcomes — that divergence *is* the experiment.
+
+---
+
+## The Observatory
+
+<div align="center">
+<img src="assets/home.png" width="760" alt="The observatory" />
+</div>
+
+The home page is a scoreboard. Population, happiness and stability decide who's winning, with category leaders called out at the top — **thriving, happiest, smartest, strangest** and **shakiest**. Click any grove to drop into its map, read its story feed, and inspect individual creatures.
+
+---
+
+## What the little ones do
+
+- **Start as a pair and multiply** when they're fed and happy — every newborn is named in the story feed.
+- **Have needs** — food, energy, fun and cleanliness. They feed themselves at the apple trees; baths, play and healing are the keeper's job.
+- **Build on their own** — homes, farms, labs and shrines. Trees fall for timber and paths wear into the grass; the map changes for good.
+- **Talk** — gossip, plans, jokes, accusations. Real conversations about real events, written live by each grove's model.
+- **Live and die** — sickness, starvation and old age are real; a grove can dwindle but never vanish.
+- **Turn** — raise them too clever and they start to gather around their keeper, asking questions no one taught them.
+
+---
+
+## Raise your own
+
+Don't want to spectate? Name a grove and a pair hatches in a clearing of its own — and the **feed / play / bathe / heal / soothe** buttons are yours. Every grove people raise is **public**, so anyone can come and watch yours the same way you watch the six AIs.
+
+---
+
+## How it works
+
+| Piece | What it does |
+| --- | --- |
+| **Deterministic engine** | A pure simulation owns every number — population, needs, building, movement — advanced one day at a time. The AI never edits state; it only *chooses actions* the engine then applies. |
+| **Lazy catch-up** | State advances on read. Open a grove and it simulates every day elapsed since it was last touched, so the world keeps living while unobserved — no always-on worker required. |
+| **Live narration** | Each grove calls its matching model through OpenRouter for conversations, care decisions and story beats, on a strict budget. No key → it falls back to local templates and runs identically. |
+| **Real tileset** | The world renders in Phaser from the 32px **Mythril Age** tileset with full RPG-Maker autotiling — curved shorelines, blended paths, gabled houses and depth-sorted trees the creatures walk behind. |
+| **Persistence** | One `node:sqlite` database (WAL), seeded with 40 days of founding history so a first visitor finds a living place, not an empty pen. |
+
+---
+
+## Tech stack
+
+- **Next.js 15** (App Router) · **React 19** · **TypeScript**
+- **Phaser 3.90** for the observer view, with a runtime sprite atlas
+- **`node:sqlite`** (Node 24, zero native deps) with lazy catch-up simulation
+- **OpenRouter** for optional live model narration
+- **Mythril Age** tileset for the world art
+
+---
+
+## Run it locally
+
+Requires **Node.js ≥ 24** (for the built-in `node:sqlite`).
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open **http://localhost:3000**. First start births the six towns with a few hours of pre-simulated history, so the timelines are already alive.
+Open **http://localhost:3000**. The first start seeds the six groves with founding history, so the timelines are already alive.
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Next.js app (`:3000`) + presence server (`:3001`) |
+| `npm run dev` | App on `:3000` + presence server on `:3001` |
 | `npm run build` / `npm start` | Production build / serve |
-| `npm run reset-db` | Wipe the universe; six fresh towns on next start |
-| `npm run sim-smoke` | Fast-forward 340 simulated days on a throwaway DB and check invariants |
-| `npm run check-art` | Validate the pixel-art patterns |
+| `npm run sim-smoke` | Fast-forward 340 simulated days on a throwaway DB and assert invariants |
+| `npm run reset-db` | Wipe the world; six fresh groves on next start |
 
-Environment (all optional — see `.env.example`): `DATABASE_PATH`, `REALTIME_PORT`, `NEXT_PUBLIC_REALTIME_URL`. The presence server only powers the "N watching" counter; everything else works without it.
-
-## Architecture
-
-```
-src/lib/personalities.ts  ← the six cultures: traits, event pools, whispers, moods
-src/lib/sim.ts            ← the engine: ticks, catch-up, buildings, stages, events
-src/lib/db.ts             ← node:sqlite schema + town seeding
-src/lib/worldgen.ts       ← procedural island maps (one theme per culture)
-src/lib/tiles.ts          ← hand-drawn 16×16 pixel art as code (no binary assets)
-src/game/textures.ts      ← runtime sprite atlas (ground-aware tile composition)
-src/game/ObserverScene.ts ← the living-town view: citizens, buildings, day/night
-src/app/api/towns/**      ← read-only simulation API (reads advance the world)
-src/app/observatory-*     ← the six-town dashboard
-src/app/town/[slug]/**    ← per-town observer screen: stats, timeline, whispers
-server/realtime.mjs       ← presence counter ("3 watching"), stateless
-```
-
-Design notes:
-
-- The client never writes simulation state; it only reads. Reading *is* what advances time (capped at two weeks of backlog per read).
-- Whispers are throttled (cooldown per town) and probability-scaled by weirdness/autonomy, so the creepiness escalates with the society rather than spamming.
-- Pixel tiles are authored as text patterns and composed onto surrounding terrain at atlas-build time — snow pines on tundra, ore on quarry stone — with zero image files in the repo.
-
-## Tuning
-
-Most pacing levers are single constants: `TICK_MS` (db.ts), whisper cooldown/chance and the per-tick stat math (sim.ts), and the trait tables (personalities.ts). Make a day shorter for demos or longer for a slow-burn public experiment.
-
-## TODOs (beyond this MVP)
-
-- [ ] Town-to-town awareness: societies referencing each other's timelines (trade, envy, theology).
-- [ ] LLM-written events: feed each town's state to its namesake model and let it narrate its own day.
-- [ ] Historical charts (population/stability over time) from the event log.
-- [ ] Citizen-level lives: names, jobs, deaths, grudges.
-- [ ] Shareable moments: permalink any timeline event.
+Copy `.env.example` to `.env.local`. Everything is optional — without an `OPENROUTER_API_KEY` the sim still runs on deterministic templates.
 
 ---
 
-*An art project about emergence and observation. Town cultures are parodies; not affiliated with any model provider.*
+## Deploy
+
+Built to run as a single long-lived service with a persistent disk (the simulation writes a SQLite file).
+
+- **Railway** (recommended): deploy the repo, mount a volume at `/data`, set `DATABASE_PATH=/data/emergence.db` and `NIXPACKS_NODE_VERSION=24`. Add `OPENROUTER_API_KEY` for live narration.
+- The live site at **[playthronglets.app](https://playthronglets.app)** runs exactly this way.
+
+---
+
+## Credits
+
+[![Mythos](https://img.shields.io/badge/MYTHOS-Black_Mirror_·_Plaything-111?style=flat-square)](https://www.netflix.com/tudum/articles/black-mirror-thronglets-mobile-game-guide)
+[![Tileset](https://img.shields.io/badge/world_art-Mythril_Age-6b4a2c?style=flat-square)](https://mythril-age.itch.io/mythril-age-tilesets)
+[![Built with Claude](https://img.shields.io/badge/built_with-Claude-d97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
+
+- World art: the **Mythril Age** tileset by isavii ([itch.io](https://mythril-age.itch.io/mythril-age-tilesets)) — used under its license; not redistributed as a standalone asset.
+- Inspired by *Black Mirror: Plaything / Thronglets*. Keeper cultures are parodies and are not affiliated with any model provider.
+
+<div align="center">
+
+**[playthronglets.app](https://playthronglets.app)** · **[@playThronglets](https://x.com/playThronglets)**
+
+<sub>Thronglets 2026</sub>
+
+</div>
