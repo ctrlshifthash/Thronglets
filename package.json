@@ -4,14 +4,15 @@
   "private": true,
   "description": "Emergence — an autonomous AI civilization simulator. Six societies shaped by different machine cultures grow in public. Observe. Compare. Check back later.",
   "engines": {
-    "node": ">=23"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "concurrently -k -n web,realtime -c blue,magenta \"next dev\" \"node server/realtime.mjs\"",
     "dev:web": "next dev",
     "dev:realtime": "node server/realtime.mjs",
     "build": "next build",
-    "start": "concurrently -k -n web,realtime -c blue,magenta \"next start\" \"node server/realtime.mjs\"",
+    "start": "next start",
+    "start:all": "concurrently -k -n web,realtime -c blue,magenta \"next start\" \"node server/realtime.mjs\"",
     "reset-db": "node scripts/reset-db.mjs",
     "check-art": "node scripts/check-art.mjs",
     "sim-smoke": "node --import ./scripts/register-ts.mjs scripts/sim-smoke.mjs"

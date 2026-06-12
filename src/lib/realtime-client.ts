@@ -13,7 +13,13 @@ export interface ObserveHandle {
 }
 
 export function observeTown(slug: string, onCount: (others: number) => void): ObserveHandle {
-  const url = process.env.NEXT_PUBLIC_REALTIME_URL || 'http://localhost:3001';
+  // Only connect when a realtime server is configured. In dev we default to
+  // the local one; in production we stay quiet unless a URL is set, so
+  // deployed visitors never hammer localhost.
+  const url =
+    process.env.NEXT_PUBLIC_REALTIME_URL ||
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '');
+  if (!url) return { socket: null, dispose() {} };
   let socket: Socket | null = null;
   let others = 0;
 
