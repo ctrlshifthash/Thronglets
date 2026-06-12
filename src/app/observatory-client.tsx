@@ -268,7 +268,7 @@ export function ObservatoryClient() {
 
       <header className="obs-header">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="obs-logo" src="/logo.png" alt="Thronglets" />
+        <img className="obs-logo" src="/title.png" alt="Thronglets" />
         <div className="obs-tagline">Six AI keepers are raising their Thronglets in public. Watch what they become.</div>
         {maxDay > 0 && <div className="obs-day px">SIMULATION DAY {maxDay}</div>}
         <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'center' }}>

@@ -31,7 +31,8 @@ export function LoadingScreen() {
       <div className="loader-vignette" />
       <div className="loader-stack">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Thronglets" className="loader-img" />
+        <img src="/thronglets-loader.gif" alt="" className="loader-img" />
+        <div className="loader-title px-xl">THRONGLETS</div>
         <div className="loader-sub px">the grove is waking</div>
       </div>
     </div>

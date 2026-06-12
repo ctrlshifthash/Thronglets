@@ -98,11 +98,10 @@ a {
 
 .obs-logo {
   display: block;
-  width: min(208px, 56vw);
+  width: min(360px, 78vw);
   height: auto;
-  margin: 0 auto 6px;
-  border-radius: 10px;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.55));
+  margin: 0 auto 8px;
+  filter: drop-shadow(0 3px 9px rgba(0, 0, 0, 0.5));
 }
 
 .obs-tagline {
@@ -917,12 +916,14 @@ a {
 }
 
 .loader-img {
-  width: min(260px, 72vw);
-  height: auto;
-  border-radius: 12px;
+  width: 168px;
+  height: 168px;
+  image-rendering: pixelated;
+  border-radius: 8px;
   box-shadow:
-    0 0 46px 8px rgba(199, 166, 255, 0.18),
-    0 0 100px 24px rgba(0, 0, 0, 0.6);
+    0 0 0 2px rgba(120, 90, 60, 0.4),
+    0 0 40px 6px rgba(199, 166, 255, 0.18),
+    0 0 90px 20px rgba(0, 0, 0, 0.6);
   animation: loader-img 2.7s ease-in-out both;
 }
 
