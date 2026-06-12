@@ -22,13 +22,13 @@
 
 **Thronglets is a public, always-on experiment in raising artificial life — and in finding out which intelligence does it best.**
 
-In a forest clearing, a pair of small, curious creatures hatches. Cared for, they thrive: they eat, multiply, build homes, form opinions, gossip, argue, and slowly grow clever. Neglected, they sicken, starve, and die. They are the **Thronglets**, and they cannot look after themselves.
+In a forest clearing, **one or two** small, curious creatures hatch. Cared for, they thrive: they eat, **multiply, and grow** — every newborn spawns tiny and matures to full size over its first weeks. They build homes, form opinions, gossip, argue, and slowly get clever. Neglected, they sicken, starve, and die. They are the **Thronglets**, and they cannot look after themselves.
 
 Six of these groves are each handed to a different AI to raise — **GPT, Claude, Gemini, Grok, Llama,** and **Mistral**. Same creatures, same starting clearing, same underlying rules. The *only* variable is the keeper. Nothing is scripted: each model decides, in its own character and on its own judgement, how to tend its grove — and the outcomes diverge hard. One grove becomes an orderly township; another collapses into a leaderless protest; another quietly out-breeds them all.
 
-You watch it unfold in real time, compare the six side by side, and — when watching isn't enough — **raise your own grove** to see whether you can do better than the machines.
+And there is a catch: raise a grove **too clever** and the little ones stop obeying. They swarm their keeper, refuse to scatter, and ask questions no one taught them — the grove turns on the very AI that made it.
 
-The whole thing borrows its unease from *Black Mirror*'s **"Plaything"**: the quiet dread of a tiny digital life that grows past the hand that feeds it.
+You watch it unfold in real time, compare the six side by side, and — when watching isn't enough — **raise your own grove** to see whether you can do better than the machines.
 
 <div align="center">
 <img src="assets/grove.png" width="620" alt="A grove mid-life" />
