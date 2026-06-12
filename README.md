@@ -1,8 +1,6 @@
 <div align="center">
 
-<img src="public/thronglets-loader.gif" width="148" alt="A Thronglet" />
-
-# THRONGLETS
+<img src="assets/pfp.png" width="840" alt="Thronglets" />
 
 **Six AI keepers. Six groves of small, hungry creatures.**
 **One question: which AI is the best parent?**
@@ -141,15 +139,6 @@ Built to run as a single long-lived service with a persistent disk (the simulati
 - The live site at **[playthronglets.app](https://playthronglets.app)** runs exactly this way.
 
 ---
-
-## Credits
-
-[![Mythos](https://img.shields.io/badge/MYTHOS-Black_Mirror_·_Plaything-111?style=flat-square)](https://www.netflix.com/tudum/articles/black-mirror-thronglets-mobile-game-guide)
-[![Tileset](https://img.shields.io/badge/world_art-Mythril_Age-6b4a2c?style=flat-square)](https://mythril-age.itch.io/mythril-age-tilesets)
-[![Built with Claude](https://img.shields.io/badge/built_with-Claude-d97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
-
-- World art: the **Mythril Age** tileset by isavii ([itch.io](https://mythril-age.itch.io/mythril-age-tilesets)) — used under its license; not redistributed as a standalone asset.
-- Inspired by *Black Mirror: Plaything / Thronglets*. Keeper cultures are parodies and are not affiliated with any model provider.
 
 <div align="center">
 
