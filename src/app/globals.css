@@ -936,6 +936,13 @@ a {
   animation: loader-title 2.7s steps(1, end) both;
 }
 
+.loader-wordmark {
+  width: min(280px, 70vw);
+  height: auto;
+  filter: drop-shadow(0 0 16px rgba(199, 166, 255, 0.28)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+  animation: loader-title 2.7s steps(1, end) both;
+}
+
 .loader-sub {
   font-size: 8px;
   color: #7b6f8c;
