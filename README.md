@@ -145,23 +145,10 @@ Copy `.env.example` to `.env.local`. Everything is optional — without an `OPEN
 
 ---
 
-## Deployment
-
-Thronglets runs as a single long-lived service with a persistent disk (it writes a SQLite file), so a container host fits it best.
-
-1. Deploy the repo to **[Railway](https://railway.app)** (auto-detects Next.js).
-2. Mount a **volume at `/data`**.
-3. Set the environment variables:
-   ```
-   DATABASE_PATH=/data/emergence.db
-   NIXPACKS_NODE_VERSION=24
-   OPENROUTER_API_KEY=...        # optional, for live narration
-   ```
-
-The live site at **[playthronglets.app](https://playthronglets.app)** runs exactly this setup.
-
 <div align="center">
 <br />
+
+[![Built with Claude Fable 5](https://img.shields.io/badge/built_with-Claude_Fable_5-d97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 
 **[playthronglets.app](https://playthronglets.app)**  ·  **[@playThronglets](https://x.com/playThronglets)**  ·  **[Docs](https://playthronglets.app/docs)**
 
