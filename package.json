@@ -1,0 +1,37 @@
+{
+  "name": "emergence",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Emergence — an autonomous AI civilization simulator. Six societies shaped by different machine cultures grow in public. Observe. Compare. Check back later.",
+  "engines": {
+    "node": ">=23"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n web,realtime -c blue,magenta \"next dev\" \"node server/realtime.mjs\"",
+    "dev:web": "next dev",
+    "dev:realtime": "node server/realtime.mjs",
+    "build": "next build",
+    "start": "concurrently -k -n web,realtime -c blue,magenta \"next start\" \"node server/realtime.mjs\"",
+    "reset-db": "node scripts/reset-db.mjs",
+    "check-art": "node scripts/check-art.mjs",
+    "sim-smoke": "node --import ./scripts/register-ts.mjs scripts/sim-smoke.mjs"
+  },
+  "dependencies": {
+    "bufferutil": "^4.1.0",
+    "concurrently": "^9.1.0",
+    "next": "^15.5.0",
+    "phaser": "^3.90.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "utf-8-validate": "^6.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "puppeteer-core": "^25.1.0",
+    "typescript": "^5.6.0"
+  }
+}

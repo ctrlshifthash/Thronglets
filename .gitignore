@@ -1,0 +1,26 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/.next-check/
+/out/
+
+# local database
+/data/
+
+# env
+.env
+.env.local
+.env*.local
+
+# misc
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# local debug screenshots / scratch
+/scripts/debug-*.png
+/scripts/contact-*.png
+/scripts/magnify-out.png
