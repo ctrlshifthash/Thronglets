@@ -254,6 +254,10 @@ let loopStarted = false;
 export function startAccrualLoop(): void {
   if (loopStarted) return;
   loopStarted = true;
+  const cfg = payoutConfig();
+  console.log(
+    `[rewards] accrual loop started (enabled=${cfg.enabled}, cluster=${cfg.cluster}, pool=${cfg.dailyPoolLamports / LAMPORTS_PER_SOL} SOL/day)`
+  );
   const run = () => void accrualTick().catch((e) => console.error('[accrualTick]', e));
   run(); // kick once on boot
   const timer = setInterval(run, ACCRUAL_TICK_MS);

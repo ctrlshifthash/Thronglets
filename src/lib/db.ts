@@ -61,6 +61,10 @@ export function db(): DatabaseSync {
     migrate(d);
     seedIfEmpty(d);
     g.__emergenceDb = d;
+    // Kick the reward accrual loop once, here in the Node runtime (node:sqlite
+    // only loads server-side). A dynamic import avoids a static import cycle
+    // and keeps the reward ledger out of any edge bundle.
+    void import('./rewardLedger').then((m) => m.startAccrualLoop()).catch(() => undefined);
   }
   return g.__emergenceDb;
 }
