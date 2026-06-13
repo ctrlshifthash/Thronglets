@@ -221,5 +221,44 @@ export async function claimReward(slug: string, wallet: string, now = Date.now()
   }
 }
 
+// ── Background accrual loop ─────────────────────────────────────────────
+// Without this, accrual only ran when a keeper happened to open their
+// dashboard — so in practice holders never accrued. This refreshes every
+// linked wallet's $THRONG holding from chain and settles on a schedule, so
+// eligible holders earn passively whether or not they ever visit the site.
+
+/** One pass: refresh stale holdings for all linked wallets, then settle. */
+export async function accrualTick(): Promise<void> {
+  const cfg = payoutConfig();
+  if (!cfg.enabled) return;
+
+  const wallets = db()
+    .prepare("SELECT DISTINCT payout_wallet FROM towns WHERE is_player = 1 AND payout_wallet <> ''")
+    .all() as Array<{ payout_wallet: string }>;
+
+  const nowMs = Date.now();
+  for (const { payout_wallet } of wallets) {
+    const cached = getCachedHolding(payout_wallet);
+    if (!cached || nowMs - cached.updated_at > HOLDING_TTL_MS) {
+      await refreshHolding(payout_wallet); // sequential — gentle on the RPC
+    }
+  }
+
+  settle(Date.now());
+}
+
+const ACCRUAL_TICK_MS = 5 * 60 * 1000; // every 5 min; settlement still emits per 12h window
+let loopStarted = false;
+
+/** Start the accrual loop once per server process (idempotent). */
+export function startAccrualLoop(): void {
+  if (loopStarted) return;
+  loopStarted = true;
+  const run = () => void accrualTick().catch((e) => console.error('[accrualTick]', e));
+  run(); // kick once on boot
+  const timer = setInterval(run, ACCRUAL_TICK_MS);
+  if (typeof timer.unref === 'function') timer.unref(); // don't keep the process alive alone
+}
+
 // Keep the TTL referenced (used by callers deciding whether to refresh).
 export { HOLDING_TTL_MS };
