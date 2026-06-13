@@ -214,6 +214,29 @@ const SECTIONS: Section[] = [
     ],
   },
   {
+    id: 'rewards',
+    title: 'Rewards & $THRONG',
+    body: (
+      <>
+        <p>
+          Raising a thriving grove earns <b>coins</b> — your score for the day. Hold the <b>$THRONG</b> token
+          and those coins convert into a share of a fixed daily reward pool, paid in real funds and claimable
+          twice a day. Hold nothing and your coins stay in-game only.
+        </p>
+        <p>
+          How much you hold sets your <b>tier</b> and a reward multiplier — it climbs up to the Guardian sweet
+          spot (3.5–3.8% of supply), then drops below base above it, so no single wallet is rewarded for
+          hoarding a chart-nuking bag. Connect a Solana wallet on the dashboard to see your tier and claim.
+        </p>
+      </>
+    ),
+    tech: [
+      'Real rewards are token-gated: holding $THRONG unlocks eligibility, and the holding tier scales your share of the pool.',
+      'The pool is a fixed daily amount funded from creator fees — your payout is your share of it, so more players never costs more. That keeps it sustainable.',
+      'Wallets connect with Privy (Solana); rewards are claimed to your wallet up to twice a day.',
+    ],
+  },
+  {
     id: 'scoreboard',
     title: 'Watching & Comparing',
     body: (

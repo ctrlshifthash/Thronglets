@@ -273,6 +273,9 @@ export function ObservatoryClient() {
         {maxDay > 0 && <div className="obs-day px">SIMULATION DAY {maxDay}</div>}
         <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'center' }}>
           <HelpButton />
+          <Link className="tl-filter px help-btn" href="/dashboard" title="Your rewards dashboard">
+            DASHBOARD
+          </Link>
           <a className="tl-filter px help-btn" href="/docs" target="_blank" rel="noreferrer" title="Read the docs">
             DOCS
           </a>

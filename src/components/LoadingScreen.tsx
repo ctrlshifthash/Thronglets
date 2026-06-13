@@ -11,20 +11,20 @@ import React, { useEffect, useState } from 'react';
  */
 export function LoadingScreen() {
   const pathname = usePathname();
-  const isDocs = pathname?.startsWith('/docs') ?? false;
+  const noSplash = (pathname?.startsWith('/docs') || pathname?.startsWith('/dashboard')) ?? false;
   const [phase, setPhase] = useState<'show' | 'fading' | 'gone'>('show');
 
   useEffect(() => {
-    if (isDocs) return;
+    if (noSplash) return;
     const t1 = setTimeout(() => setPhase('fading'), 2600);
     const t2 = setTimeout(() => setPhase('gone'), 3350);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [isDocs]);
+  }, [noSplash]);
 
-  if (isDocs || phase === 'gone') return null;
+  if (noSplash || phase === 'gone') return null;
 
   return (
     <div className={`loader-screen${phase === 'fading' ? ' loader-out' : ''}`} aria-hidden>
