@@ -55,3 +55,48 @@ export const TIERS: Tier[] = [
 export function tierFor(pct: number): Tier {
   return TIERS.find((t) => pct >= t.minPct && pct < t.maxPct) ?? TIERS[0];
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Payout config (Stage 2). Everything that decides how much real money
+// can move is read from env at runtime, so the safe defaults below ship
+// in code and the live numbers live only on the server:
+//
+//   REWARDS_ENABLED   "true" to arm payouts        (default: OFF)
+//   SOLANA_CLUSTER    "mainnet-beta" | "devnet"    (default: mainnet-beta)
+//   DAILY_POOL_SOL    the whole daily budget       (default: 0.02)
+//   MIN_CLAIM_SOL     dust floor per claim          (default: 0.002)
+//   PER_CLAIM_CAP_SOL ceiling on a single claim     (default: = daily pool)
+//
+// The hard ceiling on total spend is min(daily pool emitted, treasury
+// balance) — you can never lose more than what you fund the wallet with.
+// ─────────────────────────────────────────────────────────────────────
+
+export const LAMPORTS_PER_SOL = 1_000_000_000;
+
+export interface PayoutConfig {
+  enabled: boolean;
+  cluster: 'mainnet-beta' | 'devnet';
+  dailyPoolLamports: number;
+  /** Pool emitted per 12h window = daily pool ÷ claims-per-day. */
+  windowLamports: number;
+  minClaimLamports: number;
+  perClaimCapLamports: number;
+  /** Headroom kept in the treasury for the tx fee, never sent out. */
+  feeBufferLamports: number;
+}
+
+const toLamports = (v: string | undefined, fallbackSol: number): number =>
+  Math.max(0, Math.round((Number(v) > 0 ? Number(v) : fallbackSol) * LAMPORTS_PER_SOL));
+
+export function payoutConfig(): PayoutConfig {
+  const dailyPoolLamports = toLamports(process.env.DAILY_POOL_SOL, 0.02);
+  return {
+    enabled: process.env.REWARDS_ENABLED === 'true',
+    cluster: process.env.SOLANA_CLUSTER === 'devnet' ? 'devnet' : 'mainnet-beta',
+    dailyPoolLamports,
+    windowLamports: Math.floor(dailyPoolLamports / CLAIMS_PER_DAY),
+    minClaimLamports: toLamports(process.env.MIN_CLAIM_SOL, 0.002),
+    perClaimCapLamports: toLamports(process.env.PER_CLAIM_CAP_SOL, dailyPoolLamports / LAMPORTS_PER_SOL),
+    feeBufferLamports: 5000,
+  };
+}

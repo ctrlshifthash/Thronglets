@@ -226,14 +226,19 @@ const SECTIONS: Section[] = [
         <p>
           How much you hold sets your <b>tier</b> and a reward multiplier — it climbs up to the Guardian sweet
           spot (3.5–3.8% of supply), then drops below base above it, so no single wallet is rewarded for
-          hoarding a chart-nuking bag. Connect a Solana wallet on the dashboard to see your tier and claim.
+          hoarding a chart-nuking bag.
+        </p>
+        <p>
+          On the dashboard, connect a Solana wallet and <b>link your grove</b> to it. Your pending rewards then
+          build up as <b>SOL</b>, and you can claim them to your wallet <b>every 12 hours</b> — a countdown shows
+          when the next claim unlocks.
         </p>
       </>
     ),
     tech: [
       'Real rewards are token-gated: holding $THRONG unlocks eligibility, and the holding tier scales your share of the pool.',
       'The pool is a fixed daily amount funded from creator fees — your payout is your share of it, so more players never costs more. That keeps it sustainable.',
-      'Wallets connect with Privy (Solana); rewards are claimed to your wallet up to twice a day.',
+      'Wallets connect with Privy (Solana). Payouts are sent in SOL to your linked wallet, once per 12-hour window, behind a server-side cooldown, a fresh eligibility re-check, and a treasury cap that can never exceed what funds the reward wallet.',
     ],
   },
   {

@@ -6,6 +6,7 @@ import { MODEL_KEYS, PERSONAS, PLAYER_PERSONA, type TownPersona } from './person
 import { generateMap } from './worldgen';
 import { buildingInstances, computeBuildingSlots, hashStr, plazaOf, walkGrid, isWalkable } from './townLayout';
 import type { QuestState } from './quests';
+import { CLAIM_INTERVAL_MS } from './rewards';
 import type { Agent, AgentRole, Buildings, ModelKey, TownEvent, TownStats } from './types';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -33,6 +34,10 @@ export interface TownRow {
   display_name: string; // player grove name
   map_version: number; // bumped when the canonical grove layout changes
   quests: string; // JSON QuestState — coins, claimed quests, care counters (player groves)
+  payout_wallet: string; // Solana address this grove's rewards are paid to ('' = unlinked)
+  pending_lamports: number; // accrued, unclaimed reward (lamports)
+  last_claim_at: number; // ms timestamp of the last successful claim (cooldown anchor)
+  lifetime_paid_lamports: number; // total ever paid out from this grove (audit)
   population: number;
   food: number;
   energy: number;
@@ -101,7 +106,26 @@ function migrate(d: DatabaseSync): void {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_events_town ON town_events(town_slug, id DESC);
+
+    -- Reward ledger (Stage 2). Single-row global accrual cursor + a small
+    -- holdings cache so settlement never has to hit the RPC in a loop.
+    CREATE TABLE IF NOT EXISTS reward_state (
+      id INTEGER PRIMARY KEY,
+      last_window INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS holding_cache (
+      wallet TEXT PRIMARY KEY,
+      pct REAL NOT NULL DEFAULT 0,
+      multiplier REAL NOT NULL DEFAULT 0,
+      updated_at INTEGER NOT NULL DEFAULT 0
+    );
   `);
+
+  // Baseline the accrual cursor to the current window so the first settle
+  // after boot never mistakes a fresh DB for a long backlog of windows.
+  d.prepare('INSERT OR IGNORE INTO reward_state (id, last_window) VALUES (1, ?)').run(
+    Math.floor(Date.now() / CLAIM_INTERVAL_MS)
+  );
 
   // Additive migrations for databases created before agents/story existed.
   const cols = d.prepare('PRAGMA table_info(towns)').all() as Array<{ name: string }>;
@@ -124,6 +148,10 @@ function migrate(d: DatabaseSync): void {
     ['display_name', "ALTER TABLE towns ADD COLUMN display_name TEXT NOT NULL DEFAULT ''"],
     ['map_version', 'ALTER TABLE towns ADD COLUMN map_version INTEGER NOT NULL DEFAULT 0'],
     ['quests', "ALTER TABLE towns ADD COLUMN quests TEXT NOT NULL DEFAULT '{}'"],
+    ['payout_wallet', "ALTER TABLE towns ADD COLUMN payout_wallet TEXT NOT NULL DEFAULT ''"],
+    ['pending_lamports', 'ALTER TABLE towns ADD COLUMN pending_lamports INTEGER NOT NULL DEFAULT 0'],
+    ['last_claim_at', 'ALTER TABLE towns ADD COLUMN last_claim_at INTEGER NOT NULL DEFAULT 0'],
+    ['lifetime_paid_lamports', 'ALTER TABLE towns ADD COLUMN lifetime_paid_lamports INTEGER NOT NULL DEFAULT 0'],
   ] as const) {
     if (!cols.some((c) => c.name === name)) d.exec(ddl);
   }

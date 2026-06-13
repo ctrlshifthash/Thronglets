@@ -1088,6 +1088,112 @@ a {
   cursor: not-allowed;
 }
 
+/* ── Per-grove rewards (claim + 12h countdown) ───────────────────────── */
+.dash-groves {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 28px;
+}
+
+.dash-groves-head {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--mist-dim);
+  margin-bottom: 2px;
+}
+
+.dash-grove {
+  background: rgba(199, 166, 255, 0.06);
+  border: 1px solid rgba(199, 166, 255, 0.16);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.dash-grove-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.dash-grove-name {
+  font-size: 11px;
+  color: var(--parchment);
+}
+
+.dash-grove-coins {
+  font-size: 12px;
+  color: #f2c869;
+}
+
+.dash-grove-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.dash-grove-pending {
+  font-size: 13px;
+  color: var(--mist);
+}
+
+.dash-grove-pending b {
+  color: var(--parchment);
+}
+
+.dash-grove-note {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--mist-dim);
+}
+
+.dash-link-btn {
+  font-size: 9px;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #b69bff, #8d6ff0);
+  border: 2px solid #5f49b0;
+  border-radius: 8px;
+  color: #160d33;
+  box-shadow: 0 3px 0 #43317e;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dash-link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dash-badge {
+  font-size: 11px;
+  color: var(--mist-dim);
+  background: rgba(199, 166, 255, 0.08);
+  border: 1px solid rgba(199, 166, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.dash-cooldown {
+  font-size: 10px;
+  color: #8fe3a4;
+  background: rgba(63, 157, 76, 0.12);
+  border: 1px solid rgba(111, 208, 138, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.dash-grove-msg {
+  font-size: 12px;
+  color: var(--mist-dim);
+  margin-top: 10px;
+}
+
 .dash-section {
   margin: 26px 0;
 }
