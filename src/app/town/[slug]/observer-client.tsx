@@ -8,6 +8,7 @@ import { HelpButton } from '@/components/HelpModal';
 import { MusicToggle } from '@/components/MusicToggle';
 import { Starfield } from '@/components/Starfield';
 import type { ObserverApi } from '@/game/ObserverScene';
+import type { EvaluatedQuest } from '@/lib/quests';
 import { observeTown, type ObserveHandle } from '@/lib/realtime-client';
 import type {
   AgentSnapshot,
@@ -164,6 +165,8 @@ export function ObserverClient({ slug }: { slug: string }) {
   const [careBusy, setCareBusy] = useState(false);
   const [careNote, setCareNote] = useState<string | null>(null);
   const [cooldowns, setCooldowns] = useState<Partial<Record<CareAction, number>>>({});
+  const [showQuests, setShowQuests] = useState(false);
+  const [claimBusy, setClaimBusy] = useState<string | null>(null);
 
   const apiRef = useRef<ObserverApi | null>(null);
   const lastIdRef = useRef(0);
@@ -217,6 +220,8 @@ export function ObserverClient({ slug }: { slug: string }) {
           keeper: KeeperPublic | null;
           careCooldowns: Partial<Record<CareAction, number>>;
           summaryText: string;
+          coins?: number;
+          quests?: EvaluatedQuest[];
           events: TownEvent[];
         };
         if (!raw.town) return;
@@ -233,6 +238,8 @@ export function ObserverClient({ slug }: { slug: string }) {
               keeper: detail.keeper,
               careCooldowns: detail.careCooldowns,
               summaryText: detail.summaryText,
+              coins: detail.coins,
+              quests: detail.quests,
               events: detail.events.filter((e) => e.id > lastIdRef.current),
             }
           : raw;
@@ -247,6 +254,8 @@ export function ObserverClient({ slug }: { slug: string }) {
                 chatter: data.chatter,
                 keeper: data.keeper,
                 summaryText: data.summaryText,
+                coins: data.coins ?? cur.coins,
+                quests: data.quests ?? cur.quests,
               }
             : cur
         );
@@ -330,7 +339,9 @@ export function ObserverClient({ slug }: { slug: string }) {
           setCareNote(data.message);
           setCooldowns(data.careCooldowns ?? {});
           if (data.town && data.agents) {
-            setTown((cur) => (cur ? { ...cur, ...data.town, agents: data.agents } : cur));
+            setTown((cur) =>
+              cur ? { ...cur, ...data.town, agents: data.agents, coins: data.coins ?? cur.coins, quests: data.quests ?? cur.quests } : cur
+            );
             apiRef.current?.applyTown(
               data.town,
               town?.placements ?? [],
@@ -350,6 +361,34 @@ export function ObserverClient({ slug }: { slug: string }) {
     },
     [ownerToken, careBusy, slug, town?.placements, town?.chatter]
   );
+
+  const doClaim = useCallback(
+    async (questId: string) => {
+      if (!ownerToken || claimBusy) return;
+      setClaimBusy(questId);
+      try {
+        const res = await fetch(`/api/towns/${slug}/quests/claim`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Owner-Token': ownerToken },
+          body: JSON.stringify({ questId }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setTown((cur) => (cur ? { ...cur, coins: data.coins, quests: data.quests } : cur));
+          setCareNote(`+${data.reward} coins`);
+        } else {
+          setCareNote(data.error ?? 'Could not claim that.');
+        }
+      } catch {
+        setCareNote('The grove did not respond.');
+      } finally {
+        setClaimBusy(null);
+        setTimeout(() => setCareNote(null), 3000);
+      }
+    },
+    [ownerToken, claimBusy, slug]
+  );
+
   const onAgentSelect = useCallback((id: number | null) => {
     setSelectedAgentId(id);
     if (id !== null) setTab('status');
@@ -522,7 +561,53 @@ export function ObserverClient({ slug }: { slug: string }) {
         {town.isPlayer && !ownerToken && (
           <div className="care-bar care-bar-note">You are observing someone else’s grove.</div>
         )}
+
+        {town.isPlayer && ownerToken && (
+          <button className="quest-toggle px" onClick={() => setShowQuests(true)}>
+            <span className="coin">◎</span> {town.coins ?? 0} · QUESTS
+            {town.quests?.some((q) => q.done && !q.claimed) && <span className="quest-dot" />}
+          </button>
+        )}
+
         {careNote && <div className="care-note">{careNote}</div>}
+
+        {showQuests && town.quests && (
+          <div className="modal-overlay" onClick={() => setShowQuests(false)}>
+            <div className="report-panel quest-card" onClick={(e) => e.stopPropagation()}>
+              <div className="tl-head">
+                <h2 className="px panel-title" style={{ border: 'none', padding: 0, margin: 0 }}>QUESTS</h2>
+                <button className="ai-close" onClick={() => setShowQuests(false)}>✕</button>
+              </div>
+              <div className="quest-balance px"><span className="coin">◎</span> {town.coins ?? 0} coins</div>
+              <div className="quest-list">
+                {town.quests.map((q) => (
+                  <div key={q.id} className={`quest-row${q.claimed ? ' done' : q.done ? ' ready' : ''}`}>
+                    <div className="quest-main">
+                      <div className="quest-title px">{q.title}</div>
+                      <div className="quest-desc">{q.desc}</div>
+                      <div className="quest-bar">
+                        <span style={{ width: `${Math.min(100, Math.round((q.current / q.target) * 100))}%` }} />
+                      </div>
+                    </div>
+                    <div className="quest-side">
+                      <div className="quest-reward px"><span className="coin">◎</span>{q.reward}</div>
+                      {q.claimed ? (
+                        <span className="quest-state px claimed">CLAIMED</span>
+                      ) : q.done ? (
+                        <button className="quest-claim px" disabled={claimBusy === q.id} onClick={() => void doClaim(q.id)}>
+                          {claimBusy === q.id ? '…' : 'CLAIM'}
+                        </button>
+                      ) : (
+                        <span className="quest-state px">{q.current}/{q.target}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="quest-fine">Coins are an in-game currency for now — more uses coming. Only this grove’s keeper earns them.</p>
+            </div>
+          </div>
+        )}
 
         {whisperBanner && (
           <div className="whisper-banner">

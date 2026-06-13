@@ -15,7 +15,8 @@
     "start:all": "concurrently -k -n web,realtime -c blue,magenta \"next start\" \"node server/realtime.mjs\"",
     "reset-db": "node scripts/reset-db.mjs",
     "check-art": "node scripts/check-art.mjs",
-    "sim-smoke": "node --import ./scripts/register-ts.mjs scripts/sim-smoke.mjs"
+    "sim-smoke": "node --import ./scripts/register-ts.mjs scripts/sim-smoke.mjs",
+    "quest-smoke": "node --import ./scripts/register-ts.mjs scripts/quest-smoke.mjs"
   },
   "dependencies": {
     "bufferutil": "^4.1.0",

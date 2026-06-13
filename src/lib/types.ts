@@ -2,6 +2,8 @@
 // Shared types for the six-town simulator.
 // ─────────────────────────────────────────────────────────────────────
 
+import type { EvaluatedQuest } from './quests';
+
 export type ModelKey = 'openai' | 'claude' | 'gemini' | 'grok' | 'llama' | 'mistral';
 
 export interface TownStats {
@@ -212,4 +214,7 @@ export interface TownDetail extends TownSummary {
   /** Seconds until each care action is available again (player groves). */
   careCooldowns: Partial<Record<CareAction, number>>;
   views: number;
+  /** Player-grove economy: coin balance and quest progress (owner only). */
+  coins?: number;
+  quests?: EvaluatedQuest[];
 }

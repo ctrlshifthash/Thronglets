@@ -5,6 +5,7 @@ import path from 'node:path';
 import { MODEL_KEYS, PERSONAS, PLAYER_PERSONA, type TownPersona } from './personalities';
 import { generateMap } from './worldgen';
 import { buildingInstances, computeBuildingSlots, hashStr, plazaOf, walkGrid, isWalkable } from './townLayout';
+import type { QuestState } from './quests';
 import type { Agent, AgentRole, Buildings, ModelKey, TownEvent, TownStats } from './types';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -31,6 +32,7 @@ export interface TownRow {
   owner_token: string; // secret for player-grove care actions
   display_name: string; // player grove name
   map_version: number; // bumped when the canonical grove layout changes
+  quests: string; // JSON QuestState — coins, claimed quests, care counters (player groves)
   population: number;
   food: number;
   energy: number;
@@ -78,6 +80,7 @@ function migrate(d: DatabaseSync): void {
       owner_token TEXT NOT NULL DEFAULT '',
       display_name TEXT NOT NULL DEFAULT '',
       map_version INTEGER NOT NULL DEFAULT 0,
+      quests TEXT NOT NULL DEFAULT '{}',
       population REAL NOT NULL,
       food REAL NOT NULL,
       energy REAL NOT NULL,
@@ -120,6 +123,7 @@ function migrate(d: DatabaseSync): void {
     ['owner_token', "ALTER TABLE towns ADD COLUMN owner_token TEXT NOT NULL DEFAULT ''"],
     ['display_name', "ALTER TABLE towns ADD COLUMN display_name TEXT NOT NULL DEFAULT ''"],
     ['map_version', 'ALTER TABLE towns ADD COLUMN map_version INTEGER NOT NULL DEFAULT 0'],
+    ['quests', "ALTER TABLE towns ADD COLUMN quests TEXT NOT NULL DEFAULT '{}'"],
   ] as const) {
     if (!cols.some((c) => c.name === name)) d.exec(ddl);
   }
@@ -455,6 +459,11 @@ export function saveTown(t: TownRow): void {
 
 export function addView(slug: string): void {
   db().prepare('UPDATE towns SET views = views + 1 WHERE slug = ?').run(slug);
+}
+
+/** Quest progress / coins live in their own column; saveTown never touches it. */
+export function saveQuestState(slug: string, state: QuestState): void {
+  db().prepare('UPDATE towns SET quests = ? WHERE slug = ?').run(JSON.stringify(state), slug);
 }
 
 export function mostViewedTown(): TownRow | null {

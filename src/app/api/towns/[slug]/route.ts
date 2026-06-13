@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cachedAiSummary, maybeGenerateAI, narratorInfo } from '@/lib/aiNarrative';
 import { addView, getTown, listEvents } from '@/lib/db';
 import { PERSONAS } from '@/lib/personalities';
+import { evaluateQuests, parseQuestState } from '@/lib/quests';
 import {
   agentSnapshots,
   careCooldownsOf,
@@ -10,6 +11,7 @@ import {
   ensureBackgroundTicker,
   keeperPublicOf,
   parsePlacements,
+  questContextOf,
   storySummaryText,
   summaryOf,
 } from '@/lib/sim';
@@ -49,6 +51,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
         keeper: keeperPublicOf(town),
         careCooldowns: careCooldownsOf(town),
         summaryText,
+        coins: parseQuestState(town.quests).coins,
+        quests: evaluateQuests(questContextOf(town)),
         events: listEvents(slug, afterId),
       });
     }
@@ -67,6 +71,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ slug: string }>
       careCooldowns: careCooldownsOf(town),
       events: listEvents(slug, 0, 100),
       views: town.views,
+      coins: parseQuestState(town.quests).coins,
+      quests: evaluateQuests(questContextOf(town)),
     };
     return NextResponse.json({ town: detail });
   } catch (err) {

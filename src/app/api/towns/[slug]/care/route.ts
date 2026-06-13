@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getTown, insertEvent, now, saveTown } from '@/lib/db';
+import { getTown, insertEvent, now, saveQuestState, saveTown } from '@/lib/db';
+import { evaluateQuests, parseQuestState } from '@/lib/quests';
 import {
   agentSnapshots,
   applyCare,
@@ -7,6 +8,7 @@ import {
   CARE_TEXT,
   catchUp,
   parseCare,
+  questContextOf,
   summaryOf,
 } from '@/lib/sim';
 import { plazaOf } from '@/lib/townLayout';
@@ -56,6 +58,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
     town.care = JSON.stringify(care);
     saveTown(town);
 
+    // Every act of care the keeper performs counts toward quests.
+    const qs = parseQuestState(town.quests);
+    qs.cares[action] = (qs.cares[action] ?? 0) + 1;
+    saveQuestState(slug, qs);
+    town.quests = JSON.stringify(qs);
+
     // Player actions are rare (cooldown-gated) — record every one, even
     // the unneeded kindnesses. That's part of the story of your grove.
     const NOT_NEEDED: Record<CareAction, string> = {
@@ -74,6 +82,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
       town: summaryOf(town),
       agents: agentSnapshots(town),
       careCooldowns: careCooldownsOf(town, COOLDOWN_MS),
+      coins: qs.coins,
+      quests: evaluateQuests(questContextOf(town)),
     });
   } catch (err) {
     console.error('[api/towns/care]', err);

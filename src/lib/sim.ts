@@ -42,6 +42,7 @@ import {
   stepToward,
   walkGrid,
 } from './townLayout';
+import { parseQuestState, type QuestContext } from './quests';
 import type {
   Agent,
   AgentSnapshot,
@@ -1367,6 +1368,26 @@ export function chatterOf(t: TownRow): Chatter[] {
   } catch {
     return [];
   }
+}
+
+/** Live state a quest can test — derived fresh from the grove each read. */
+export function questContextOf(t: TownRow): QuestContext {
+  const agents = JSON.parse(t.agents || '[]') as Agent[];
+  const denom = Math.max(1, agents.length);
+  const buildings = JSON.parse(t.buildings || '{}') as Buildings;
+  const qs = parseQuestState(t.quests);
+  return {
+    population: agents.length,
+    day: t.tick,
+    avgNourish: agents.reduce((s, a) => s + (a.nourish ?? 0), 0) / denom,
+    oldestAge: agents.reduce((m, a) => Math.max(m, a.age ?? 0), 0),
+    happiness: t.happiness,
+    stability: t.stability,
+    buildingTypes: Object.values(buildings).filter((n) => (n as number) >= 1).length,
+    cares: qs.cares,
+    claimed: qs.claimed,
+    coins: qs.coins,
+  };
 }
 
 export function parsePlacements(t: TownRow): Placement[] {
