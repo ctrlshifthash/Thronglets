@@ -1194,6 +1194,110 @@ a {
   margin-top: 10px;
 }
 
+/* ── Leaderboard ─────────────────────────────────────────────────────── */
+.lb-table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 18px 0 8px;
+}
+
+.lb-head,
+.lb-row {
+  display: grid;
+  grid-template-columns: 36px 1.4fr 1fr 0.7fr 1.1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.lb-head {
+  font-size: 11px;
+  color: var(--mist-dim);
+  border-bottom: 1px solid rgba(199, 166, 255, 0.12);
+}
+
+.lb-row {
+  background: rgba(199, 166, 255, 0.04);
+  border: 1px solid rgba(199, 166, 255, 0.1);
+  border-radius: 8px;
+}
+
+.lb-row.lb-top {
+  background: rgba(242, 200, 105, 0.07);
+  border-color: rgba(242, 200, 105, 0.25);
+}
+
+.lb-num {
+  text-align: right;
+}
+
+.lb-rank {
+  font-size: 12px;
+  color: var(--mist-dim);
+}
+
+.lb-row.lb-top .lb-rank {
+  color: #f2c869;
+}
+
+.lb-grove {
+  font-size: 14px;
+  color: var(--parchment);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-keeper {
+  font-size: 10px;
+  color: var(--mist-dim);
+}
+
+.lb-coins {
+  font-size: 13px;
+  color: #f2c869;
+}
+
+.lb-earned {
+  font-size: 12px;
+  color: var(--parchment);
+}
+
+.lb-pending {
+  font-size: 10px;
+  color: var(--mist-dim);
+}
+
+.lb-empty {
+  margin: 24px 0;
+  padding: 26px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--mist-dim);
+  background: rgba(199, 166, 255, 0.05);
+  border: 1px solid rgba(199, 166, 255, 0.12);
+  border-radius: 10px;
+}
+
+@media (max-width: 560px) {
+  .lb-head,
+  .lb-row {
+    grid-template-columns: 26px 1.3fr 0.8fr 1fr;
+    gap: 8px;
+  }
+  .lb-keeper {
+    display: none;
+  }
+}
+
+/* CREATE call-to-action in the home top bar — leaf-green so it stands out. */
+.tl-filter.create-top {
+  background: linear-gradient(180deg, #6fd08a, #3f9d4c);
+  border-color: #2f6e34;
+  color: #0c2a14;
+}
+
 .dash-section {
   margin: 26px 0;
 }

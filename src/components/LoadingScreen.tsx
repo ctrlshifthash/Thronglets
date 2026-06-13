@@ -11,7 +11,9 @@ import React, { useEffect, useState } from 'react';
  */
 export function LoadingScreen() {
   const pathname = usePathname();
-  const noSplash = (pathname?.startsWith('/docs') || pathname?.startsWith('/dashboard')) ?? false;
+  const noSplash =
+    (pathname?.startsWith('/docs') || pathname?.startsWith('/dashboard') || pathname?.startsWith('/leaderboard')) ??
+    false;
   const [phase, setPhase] = useState<'show' | 'fading' | 'gone'>('show');
 
   useEffect(() => {

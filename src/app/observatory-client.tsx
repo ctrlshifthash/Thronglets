@@ -246,10 +246,20 @@ export function ObservatoryClient() {
         <img className="obs-logo" src="/title.png" alt="Thronglets" />
         <div className="obs-tagline">Six AI keepers are raising their Thronglets in public. Watch what they become.</div>
         {maxDay > 0 && <div className="obs-day px">SIMULATION DAY {maxDay}</div>}
-        <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'center' }}>
+        <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button
+            className="tl-filter px help-btn create-top"
+            title="Raise your own grove"
+            onClick={() => window.dispatchEvent(new Event('open-create-grove'))}
+          >
+            🌱 CREATE
+          </button>
           <HelpButton />
           <Link className="tl-filter px help-btn" href="/dashboard" title="Your rewards dashboard">
             DASHBOARD
+          </Link>
+          <Link className="tl-filter px help-btn" href="/leaderboard" title="Top earners">
+            LEADERBOARD
           </Link>
           <a className="tl-filter px help-btn" href="/docs" target="_blank" rel="noreferrer" title="Read the docs">
             DOCS

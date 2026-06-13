@@ -5,7 +5,7 @@ import path from 'node:path';
 import { MODEL_KEYS, PERSONAS, PLAYER_PERSONA, type TownPersona } from './personalities';
 import { generateMap } from './worldgen';
 import { buildingInstances, computeBuildingSlots, hashStr, plazaOf, walkGrid, isWalkable } from './townLayout';
-import type { QuestState } from './quests';
+import { parseQuestState, type QuestState } from './quests';
 import { CLAIM_INTERVAL_MS } from './rewards';
 import type { Agent, AgentRole, Buildings, ModelKey, TownEvent, TownStats } from './types';
 
@@ -482,6 +482,44 @@ export function createPlayerTown(displayName: string, creatorWallet = ''): { slu
       token, creatorWallet, creatorWallet, name, founders.length
     );
   return { slug, token };
+}
+
+export interface LeaderboardEntry {
+  name: string;
+  wallet: string; // payout wallet ('' if unlinked) — shortened before display
+  earnedLamports: number; // total SOL ever paid out
+  pendingLamports: number; // accrued, unclaimed
+  coins: number;
+}
+
+/** Player groves ranked by real earnings (then pending, then coins). */
+export function leaderboardRows(limit = 50): LeaderboardEntry[] {
+  const rows = db()
+    .prepare(
+      'SELECT display_name, payout_wallet, lifetime_paid_lamports, pending_lamports, quests FROM towns WHERE is_player = 1'
+    )
+    .all() as Array<{
+    display_name: string;
+    payout_wallet: string;
+    lifetime_paid_lamports: number;
+    pending_lamports: number;
+    quests: string;
+  }>;
+  return rows
+    .map((r) => ({
+      name: r.display_name || 'Unnamed Grove',
+      wallet: r.payout_wallet || '',
+      earnedLamports: r.lifetime_paid_lamports || 0,
+      pendingLamports: r.pending_lamports || 0,
+      coins: parseQuestState(r.quests).coins,
+    }))
+    .sort(
+      (a, b) =>
+        b.earnedLamports - a.earnedLamports ||
+        b.pendingLamports - a.pendingLamports ||
+        b.coins - a.coins
+    )
+    .slice(0, limit);
 }
 
 /** How many groves a wallet has created — drives the free-world allowance. */
