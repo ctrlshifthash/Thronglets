@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { kickAccrual } from '@/lib/rewardLedger';
 import { catchUpAll, catchUpPlayerTowns, ensureBackgroundTicker, summaryOf } from '@/lib/sim';
 
 export const dynamic = 'force-dynamic';
@@ -6,6 +7,9 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     ensureBackgroundTicker();
+    kickAccrual(); // non-blocking: accrue rewards on normal traffic
+
+
     const towns = catchUpAll().map(summaryOf);
     // Groves raised by visitors — public, spectatable by anyone.
     const community = catchUpPlayerTowns().map(summaryOf);

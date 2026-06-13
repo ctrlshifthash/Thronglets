@@ -295,21 +295,19 @@ export async function accrualTick(): Promise<void> {
   settle(Date.now());
 }
 
-const ACCRUAL_TICK_MS = 5 * 60 * 1000; // every 5 min; settlement still emits per 12h window
-let loopStarted = false;
+// Traffic-driven accrual. A bare setInterval proved unreliable on the host
+// (fired once, then never again), so instead we run a tick at most once per
+// gate window, kicked by normal request traffic — the homepage polls
+// /api/towns constantly. Non-blocking: never delays a response. The gate
+// timestamp lives on globalThis so it survives module reloads.
+const ACCRUAL_GATE_MS = 60 * 1000;
+const gAccrual = globalThis as unknown as { __rewardKickTs?: number };
 
-/** Start the accrual loop once per server process (idempotent). */
-export function startAccrualLoop(): void {
-  if (loopStarted) return;
-  loopStarted = true;
-  const cfg = payoutConfig();
-  console.log(
-    `[rewards] accrual loop started (enabled=${cfg.enabled}, cluster=${cfg.cluster}, pool=${cfg.dailyPoolLamports / LAMPORTS_PER_SOL} SOL/day)`
-  );
-  const run = () => void accrualTick().catch((e) => console.error('[accrualTick]', e));
-  run(); // kick once on boot
-  const timer = setInterval(run, ACCRUAL_TICK_MS);
-  if (typeof timer.unref === 'function') timer.unref(); // don't keep the process alive alone
+export function kickAccrual(): void {
+  const now = Date.now();
+  if (gAccrual.__rewardKickTs && now - gAccrual.__rewardKickTs < ACCRUAL_GATE_MS) return;
+  gAccrual.__rewardKickTs = now;
+  void accrualTick().catch((e) => console.error('[kickAccrual]', e));
 }
 
 // Keep the TTL referenced (used by callers deciding whether to refresh).
