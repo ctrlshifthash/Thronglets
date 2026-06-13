@@ -24,9 +24,10 @@ const LINKS = [
   { href: 'https://github.com/playThronglets/Thronglets', label: 'GitHub', icon: GithubIcon },
 ];
 
-export function SocialLinks() {
+export function SocialLinks({ leading }: { leading?: React.ReactNode }) {
   return (
     <nav className="social-nav" aria-label="Links">
+      {leading}
       {LINKS.map((l) => (
         <a key={l.label} className="social-box" href={l.href} target="_blank" rel="noreferrer" title={l.label} aria-label={l.label}>
           {l.icon}

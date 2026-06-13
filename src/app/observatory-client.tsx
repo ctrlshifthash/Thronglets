@@ -1,11 +1,22 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HelpButton } from '@/components/HelpModal';
 import { MusicToggle } from '@/components/MusicToggle';
 import { SocialLinks } from '@/components/SocialLinks';
+
+// Privy is browser-only — load the connect button client-side to keep the homepage light.
+const HomeWalletButton = dynamic(() => import('@/components/HomeWalletButton').then((m) => m.HomeWalletButton), {
+  ssr: false,
+  loading: () => (
+    <span className="home-wallet px" style={{ opacity: 0.6 }} aria-hidden>
+      CONNECT WALLET
+    </span>
+  ),
+});
 import { Starfield } from '@/components/Starfield';
 import { GroveMiniCard, TownCard } from '@/components/TownCard';
 import type { TownSummary } from '@/lib/types';
@@ -264,7 +275,7 @@ export function ObservatoryClient() {
   return (
     <div className="obs-root">
       <Starfield />
-      <SocialLinks />
+      <SocialLinks leading={<HomeWalletButton />} />
 
       <header className="obs-header">
         {/* eslint-disable-next-line @next/next/no-img-element */}
