@@ -54,9 +54,11 @@ export default function LeaderboardPage() {
               <span className="lb-num">Earned ◎</span>
             </div>
             {rows.map((r, i) => (
-              <div key={`${r.name}-${i}`} className={`lb-row${i < 3 ? ' lb-top' : ''}`}>
+              <div key={`${r.slug}-${i}`} className={`lb-row${i < 3 ? ' lb-top' : ''}`}>
                 <span className="lb-rank px">{i + 1}</span>
-                <span className="lb-grove">{r.name}</span>
+                <Link className="lb-grove" href={`/town/${r.slug}`} title={`Watch ${r.name}`}>
+                  {r.name}
+                </Link>
                 <span className="lb-keeper px">{shortWallet(r.wallet)}</span>
                 <span className="lb-num lb-coins">{fmtCoins(r.coins)}</span>
                 <span className="lb-num lb-earned px">

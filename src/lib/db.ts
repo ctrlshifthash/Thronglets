@@ -485,6 +485,7 @@ export function createPlayerTown(displayName: string, creatorWallet = ''): { slu
 }
 
 export interface LeaderboardEntry {
+  slug: string; // links to the grove's public page (/town/<slug>)
   name: string;
   wallet: string; // payout wallet ('' if unlinked) — shortened before display
   earnedLamports: number; // total SOL ever paid out
@@ -496,9 +497,10 @@ export interface LeaderboardEntry {
 export function leaderboardRows(limit = 50): LeaderboardEntry[] {
   const rows = db()
     .prepare(
-      'SELECT display_name, payout_wallet, lifetime_paid_lamports, pending_lamports, quests FROM towns WHERE is_player = 1'
+      'SELECT slug, display_name, payout_wallet, lifetime_paid_lamports, pending_lamports, quests FROM towns WHERE is_player = 1'
     )
     .all() as Array<{
+    slug: string;
     display_name: string;
     payout_wallet: string;
     lifetime_paid_lamports: number;
@@ -507,6 +509,7 @@ export function leaderboardRows(limit = 50): LeaderboardEntry[] {
   }>;
   return rows
     .map((r) => ({
+      slug: r.slug,
       name: r.display_name || 'Unnamed Grove',
       wallet: r.payout_wallet || '',
       earnedLamports: r.lifetime_paid_lamports || 0,

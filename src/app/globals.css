@@ -1244,9 +1244,16 @@ a {
 .lb-grove {
   font-size: 14px;
   color: var(--parchment);
+  text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.12s ease;
+}
+
+a.lb-grove:hover {
+  color: #f2c869;
+  text-decoration: underline;
 }
 
 .lb-keeper {
