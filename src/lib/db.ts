@@ -495,9 +495,10 @@ export interface LeaderboardEntry {
 
 /** Player groves ranked by real earnings (then pending, then coins). */
 export function leaderboardRows(limit = 50): LeaderboardEntry[] {
+  // Only groves linked to a wallet can earn, so the board lists those.
   const rows = db()
     .prepare(
-      'SELECT slug, display_name, payout_wallet, lifetime_paid_lamports, pending_lamports, quests FROM towns WHERE is_player = 1'
+      "SELECT slug, display_name, payout_wallet, lifetime_paid_lamports, pending_lamports, quests FROM towns WHERE is_player = 1 AND payout_wallet <> ''"
     )
     .all() as Array<{
     slug: string;
