@@ -19,7 +19,7 @@ const GithubIcon = (
 );
 
 const LINKS = [
-  { href: 'https://pump.fun', label: 'Pump.fun', icon: PumpIcon },
+  { href: 'https://pump.fun/coin/B5PqW6EgYhgUdtjyfp8TzHGNKKaDUtjNCSWL7bPbpump', label: 'Pump.fun', icon: PumpIcon },
   { href: 'https://x.com/playThronglets', label: 'X', icon: XIcon },
   { href: 'https://github.com/playThronglets/Thronglets', label: 'GitHub', icon: GithubIcon },
 ];
