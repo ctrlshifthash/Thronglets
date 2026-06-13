@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { LAMPORTS_PER_SOL, payoutConfig, tierFor } from '@/lib/rewards';
 import { payoutAddress, treasuryLamports } from '@/lib/payout';
+import { rewardStats } from '@/lib/rewardLedger';
 import { isValidAddress, readHolding } from '@/lib/solana';
 
 export const dynamic = 'force-dynamic';
@@ -33,6 +34,7 @@ export async function GET(req: Request) {
           treasurySol: treasuryLam === null ? null : treasuryLam / LAMPORTS_PER_SOL,
           funded: treasuryLam !== null && treasuryLam > cfg.feeBufferLamports,
           treasuryWallet,
+          ...rewardStats(),
         },
       });
     }

@@ -19,7 +19,7 @@ import { sendSol, treasuryLamports } from './payout';
 import { readHolding } from './solana';
 
 const HOLDING_TTL_MS = 10 * 60 * 1000;
-const windowOf = (ts: number): number => Math.floor(ts / CLAIM_INTERVAL_MS);
+const DAY_MS = 86_400_000;
 
 // ── Holding cache (avoids hammering the RPC during settlement) ─────────
 
@@ -77,24 +77,33 @@ export function distribute(
 // ── Settlement ─────────────────────────────────────────────────────────
 
 /**
- * Accrue one window's pool to eligible groves, if a new 12h window has
- * begun since the last settlement. Idempotent within a window; emits at
- * most one window's pool per call (conservative after downtime). No-op
- * when rewards are disabled.
+ * Continuous accrual: each call emits the slice of the daily pool earned
+ * since the last settle (poolPerDay × elapsed/day), split across eligible
+ * groves by coins × holding multiplier and added to their pending balance.
+ * So pending climbs steadily (every loop tick / page hit), not in 12h
+ * lumps. Bounded — total emitted across any day can't exceed the daily
+ * pool. No-op when rewards are disabled.
  */
 export function settle(now = Date.now()): void {
   const cfg = payoutConfig();
   if (!cfg.enabled) return;
 
-  const state = db().prepare('SELECT last_window FROM reward_state WHERE id = 1').get() as
-    | { last_window: number }
+  const state = db().prepare('SELECT last_ts FROM reward_state WHERE id = 1').get() as
+    | { last_ts: number }
     | undefined;
-  const cur = windowOf(now);
-  if (state === undefined) {
-    db().prepare('INSERT OR IGNORE INTO reward_state (id, last_window) VALUES (1, ?)').run(cur);
-    return; // establish a baseline; never emit on the very first settle
+
+  // First run (or a row predating continuous accrual): set the time
+  // baseline and emit nothing, so we never bank a giant first lump.
+  if (!state || !state.last_ts) {
+    db().prepare('UPDATE reward_state SET last_ts = ? WHERE id = 1').run(now);
+    return;
   }
-  if (cur <= state.last_window) return; // same window — nothing new to emit
+
+  let elapsed = now - state.last_ts;
+  if (elapsed <= 0) return;
+  if (elapsed > DAY_MS) elapsed = DAY_MS; // cap a post-downtime catch-up at one day's pool
+  const emit = Math.floor((cfg.dailyPoolLamports * elapsed) / DAY_MS);
+  if (emit <= 0) return; // too little time elapsed to emit a whole lamport yet
 
   const rows = db()
     .prepare("SELECT slug, quests, payout_wallet FROM towns WHERE is_player = 1 AND payout_wallet <> ''")
@@ -109,10 +118,12 @@ export function settle(now = Date.now()): void {
     groves.push({ slug: r.slug, weight: coins * mult });
   }
 
-  const shares = distribute(cfg.windowLamports, groves);
+  const shares = distribute(emit, groves);
   const upd = db().prepare('UPDATE towns SET pending_lamports = pending_lamports + ? WHERE slug = ?');
   for (const [slug, amt] of shares) if (amt > 0) upd.run(amt, slug);
-  db().prepare('UPDATE reward_state SET last_window = ? WHERE id = 1').run(cur);
+  // Advance the clock regardless — if nobody was eligible, that slice is
+  // simply skipped rather than banked into a future lump.
+  db().prepare('UPDATE reward_state SET last_ts = ? WHERE id = 1').run(now);
 }
 
 // ── Read a grove's reward state for the dashboard ──────────────────────
@@ -219,6 +230,43 @@ export async function claimReward(slug: string, wallet: string, now = Date.now()
   } finally {
     inFlight.delete(slug);
   }
+}
+
+// ── Aggregate stats (diagnostics) ───────────────────────────────────────
+
+export interface RewardStats {
+  linkedGroves: number; // player groves with a payout wallet set
+  eligibleGroves: number; // ...of those, currently holding enough $THRONG to earn
+  pendingSol: number; // total accrued, unclaimed, across all groves
+  paidSol: number; // total ever paid out
+  lastSettleAt: number; // ms of the last accrual tick (0 = never run)
+}
+
+export function rewardStats(): RewardStats {
+  const linked = (
+    db().prepare("SELECT COUNT(*) AS c FROM towns WHERE is_player = 1 AND payout_wallet <> ''").get() as { c: number }
+  ).c;
+  const eligible = (
+    db()
+      .prepare(
+        `SELECT COUNT(*) AS c FROM towns t JOIN holding_cache h ON h.wallet = t.payout_wallet
+         WHERE t.is_player = 1 AND t.payout_wallet <> '' AND h.multiplier > 0`
+      )
+      .get() as { c: number }
+  ).c;
+  const sums = db()
+    .prepare(
+      'SELECT COALESCE(SUM(pending_lamports),0) AS pend, COALESCE(SUM(lifetime_paid_lamports),0) AS paid FROM towns WHERE is_player = 1'
+    )
+    .get() as { pend: number; paid: number };
+  const state = db().prepare('SELECT last_ts FROM reward_state WHERE id = 1').get() as { last_ts: number } | undefined;
+  return {
+    linkedGroves: linked,
+    eligibleGroves: eligible,
+    pendingSol: sums.pend / LAMPORTS_PER_SOL,
+    paidSol: sums.paid / LAMPORTS_PER_SOL,
+    lastSettleAt: state?.last_ts ?? 0,
+  };
 }
 
 // ── Background accrual loop ─────────────────────────────────────────────

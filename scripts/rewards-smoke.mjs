@@ -38,16 +38,25 @@ db().prepare(
    ON CONFLICT(wallet) DO UPDATE SET multiplier = 1.0`
 ).run(WALLET, Date.now());
 
+const DAY_MS = 86_400_000;
 const base = Date.now();
+ledger.settle(base); // baseline the clock — emits nothing on the first call
 const before = getTown(slug).pending_lamports;
-ledger.settle(base + CLAIM_INTERVAL_MS); // advance into the next window
+ledger.settle(base + CLAIM_INTERVAL_MS); // 12h later → continuous accrual
 const gained = getTown(slug).pending_lamports - before;
-ok(gained === payoutConfig().windowLamports, `one window accrues the full window pool (${gained} == ${payoutConfig().windowLamports})`);
+const half = Math.floor((payoutConfig().dailyPoolLamports * CLAIM_INTERVAL_MS) / DAY_MS);
+ok(gained === half, `12h of continuous accrual = half the daily pool (${gained} == ${half})`);
 
-// 3. Settling again inside the same window adds nothing.
+// 3. Settling at the same instant adds nothing (no time elapsed).
 const held = getTown(slug).pending_lamports;
-ledger.settle(base + CLAIM_INTERVAL_MS + 1000);
-ok(getTown(slug).pending_lamports === held, 'second settle in the same window is a no-op');
+ledger.settle(base + CLAIM_INTERVAL_MS);
+ok(getTown(slug).pending_lamports === held, 'settle at the same instant is a no-op');
+
+// 3b. A further 6h accrues a quarter of the daily pool.
+ledger.settle(base + CLAIM_INTERVAL_MS + DAY_MS / 4);
+const gained2 = getTown(slug).pending_lamports - held;
+const quarter = Math.floor((payoutConfig().dailyPoolLamports * (DAY_MS / 4)) / DAY_MS);
+ok(gained2 === quarter, `a further 6h accrues a quarter of the daily pool (${gained2} == ${quarter})`);
 
 // 4. Guardrails that must reject before any transfer:
 let r = await ledger.claimReward(slug, OTHER, base + CLAIM_INTERVAL_MS + 2000);

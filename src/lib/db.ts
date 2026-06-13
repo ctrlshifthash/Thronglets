@@ -116,7 +116,8 @@ function migrate(d: DatabaseSync): void {
     -- holdings cache so settlement never has to hit the RPC in a loop.
     CREATE TABLE IF NOT EXISTS reward_state (
       id INTEGER PRIMARY KEY,
-      last_window INTEGER NOT NULL DEFAULT 0
+      last_window INTEGER NOT NULL DEFAULT 0,
+      last_ts INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS holding_cache (
       wallet TEXT PRIMARY KEY,
@@ -137,11 +138,15 @@ function migrate(d: DatabaseSync): void {
     );
   `);
 
-  // Baseline the accrual cursor to the current window so the first settle
-  // after boot never mistakes a fresh DB for a long backlog of windows.
+  // Baseline the accrual row so settle() has somewhere to track time from.
   d.prepare('INSERT OR IGNORE INTO reward_state (id, last_window) VALUES (1, ?)').run(
     Math.floor(Date.now() / CLAIM_INTERVAL_MS)
   );
+  // Additive: continuous accrual tracks a timestamp, not a window.
+  const rsCols = d.prepare('PRAGMA table_info(reward_state)').all() as Array<{ name: string }>;
+  if (!rsCols.some((c) => c.name === 'last_ts')) {
+    d.exec('ALTER TABLE reward_state ADD COLUMN last_ts INTEGER NOT NULL DEFAULT 0');
+  }
 
   // Additive migrations for databases created before agents/story existed.
   const cols = d.prepare('PRAGMA table_info(towns)').all() as Array<{ name: string }>;
