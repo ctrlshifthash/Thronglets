@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HelpButton } from '@/components/HelpModal';
 import { MusicToggle } from '@/components/MusicToggle';
@@ -16,6 +15,13 @@ const HomeWalletButton = dynamic(() => import('@/components/HomeWalletButton').t
       CONNECT WALLET
     </span>
   ),
+});
+
+// The create flow needs the wallet (per-wallet free limit + fee) — load it
+// client-side, only when the planting modal opens.
+const CreateGroveFlow = dynamic(() => import('@/components/CreateGroveFlow').then((m) => m.CreateGroveFlow), {
+  ssr: false,
+  loading: () => <p className="cg-note">Loading…</p>,
 });
 import { Starfield } from '@/components/Starfield';
 import { GroveMiniCard, TownCard } from '@/components/TownCard';
@@ -77,11 +83,7 @@ function readMyGroves(): MyGrove[] {
 }
 
 function RaiseYourOwn() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [mine, setMine] = useState<MyGrove[]>([]);
 
   useEffect(() => setMine(readMyGroves()), []);
@@ -110,32 +112,6 @@ function RaiseYourOwn() {
     };
   }, []);
 
-  const create = async () => {
-    if (busy) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/towns/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? 'Could not plant the grove.');
-        return;
-      }
-      localStorage.setItem(`grove-token-${data.slug}`, data.token);
-      const list = [...readMyGroves(), { slug: data.slug, name: name.trim() || 'My Grove' }];
-      localStorage.setItem('my-groves', JSON.stringify(list));
-      router.push(`/town/${data.slug}`);
-    } catch {
-      setError('Could not plant the grove.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <section className="raise-own">
       <button className="tl-filter px raise-btn" onClick={() => setOpen(true)}>
@@ -161,19 +137,7 @@ function RaiseYourOwn() {
               Two little ones will hatch in a clearing of their own. They multiply when fed and happy —
               and unlike the six AI groves, nobody looks after them but you.
             </p>
-            <input
-              className="grove-name-input"
-              type="text"
-              maxLength={20}
-              placeholder="e.g. Mossy Hollow"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && void create()}
-            />
-            {error && <div style={{ color: '#b3262e', fontSize: 12 }}>{error}</div>}
-            <button className="tl-filter px intro-btn" disabled={busy || name.trim().length < 2} onClick={() => void create()}>
-              {busy ? 'PLANTING…' : 'PLANT THE GROVE'}
-            </button>
+            <CreateGroveFlow />
           </div>
         </div>
       )}

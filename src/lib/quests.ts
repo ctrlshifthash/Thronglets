@@ -13,7 +13,7 @@
  * and future-proofs new coin sources. It's the per-grove payout unit;
  * per-wallet limits come later, once groves are tied to accounts.
  */
-export const COIN_CAP = 2000;
+export const COIN_CAP = 6000;
 
 export type CareKey = 'feed' | 'play' | 'bathe' | 'heal' | 'soothe';
 
@@ -84,6 +84,16 @@ export const QUESTS: QuestDef[] = [
   { id: 'elder', title: 'Elder', desc: 'Raise a little one to 300 days old.', reward: 200, target: 300, progress: (c) => c.oldestAge },
   { id: 'fullhouse', title: 'Full House', desc: 'Have every kind of building at once.', reward: 300, target: 8, progress: (c) => c.buildingTypes },
   { id: 'thriving', title: 'Thriving', desc: 'Reach 80+ happiness and 70+ stability.', reward: 400, target: 1, progress: (c) => (c.happiness >= 80 && c.stability >= 70 ? 1 : 0) },
+  // ── Harder tier — long-haul challenges for committed keepers ──────────
+  { id: 'feasts', title: 'Bountiful', desc: 'Feed the grove 25 times.', reward: 150, target: 25, progress: (c) => c.cares.feed },
+  { id: 'soothes', title: 'Comfort', desc: 'Soothe the little ones 15 times.', reward: 150, target: 15, progress: (c) => c.cares.soothe },
+  { id: 'devoted', title: 'Devoted Keeper', desc: 'Perform 80 care actions in total.', reward: 350, target: 80, progress: (c) => c.cares.feed + c.cares.play + c.cares.bathe + c.cares.heal + c.cares.soothe },
+  { id: 'quarter', title: 'Quarter Century', desc: 'Keep the grove alive to Day 25.', reward: 300, target: 25, progress: (c) => c.day },
+  { id: 'township', title: 'A Township', desc: 'Grow your grove to 25 little ones.', reward: 450, target: 25, progress: (c) => c.population },
+  { id: 'ancient', title: 'Ancient One', desc: 'Raise a little one to 500 days old.', reward: 350, target: 500, progress: (c) => c.oldestAge },
+  { id: 'utopia', title: 'Utopia', desc: 'Reach 90+ happiness and 85+ stability.', reward: 600, target: 1, progress: (c) => (c.happiness >= 90 && c.stability >= 85 ? 1 : 0) },
+  { id: 'jubilee', title: 'Golden Jubilee', desc: 'Keep the grove alive to Day 50.', reward: 700, target: 50, progress: (c) => c.day },
+  { id: 'city', title: 'A City', desc: 'Grow your grove to 40 little ones.', reward: 900, target: 40, progress: (c) => c.population },
 ];
 
 export interface EvaluatedQuest {

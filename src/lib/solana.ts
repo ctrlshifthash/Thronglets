@@ -29,6 +29,40 @@ export function isValidAddress(address: string): boolean {
   }
 }
 
+/**
+ * Verify an on-chain SOL payment for world creation. Confirms the tx
+ * succeeded and that `toWallet` received at least `minLamports` from
+ * `fromWallet`, by inspecting the transaction's pre/post balances. Returns
+ * false on any doubt — never approve a payment we can't fully confirm.
+ */
+export async function verifyFeePayment(
+  signature: string,
+  fromWallet: string,
+  toWallet: string,
+  minLamports: number
+): Promise<boolean> {
+  try {
+    const conn = connection();
+    const tx = await conn.getTransaction(signature, {
+      commitment: 'confirmed',
+      maxSupportedTransactionVersion: 0,
+    });
+    if (!tx || !tx.meta || tx.meta.err) return false;
+
+    const keys = tx.transaction.message.getAccountKeys().staticAccountKeys.map((k) => k.toBase58());
+    const toIdx = keys.indexOf(toWallet);
+    const fromIdx = keys.indexOf(fromWallet);
+    if (toIdx < 0 || fromIdx < 0) return false; // both parties must be in the tx
+
+    const received = tx.meta.postBalances[toIdx] - tx.meta.preBalances[toIdx];
+    const sent = tx.meta.preBalances[fromIdx] - tx.meta.postBalances[fromIdx];
+    // Treasury must have gained ≥ fee, and the payer must have parted with ≥ fee.
+    return received >= minLamports && sent >= minLamports;
+  } catch {
+    return false;
+  }
+}
+
 /** Read a wallet's $THRONG balance and its share of total supply. */
 export async function readHolding(address: string): Promise<Holding> {
   const conn = connection();

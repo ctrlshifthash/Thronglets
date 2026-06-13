@@ -100,3 +100,20 @@ export function payoutConfig(): PayoutConfig {
     feeBufferLamports: 5000,
   };
 }
+
+// ── World-creation limit (anti-farm) ───────────────────────────────────
+// Each wallet gets a couple of free groves; beyond that, creating one costs
+// a flat SOL fee (paid on-chain to the treasury, verified server-side). The
+// fee makes mass grove-farming uneconomical and helps fund the reward pool.
+
+/** Free groves a single wallet may create before the fee applies. */
+export const WORLD_FREE_LIMIT = Number(process.env.WORLD_FREE_LIMIT) > 0 ? Number(process.env.WORLD_FREE_LIMIT) : 2;
+
+/** Fee in lamports to create a grove beyond the free allowance. Default 0.3 SOL. */
+export function worldFeeLamports(): number {
+  return toLamports(process.env.WORLD_FEE_SOL, 0.3);
+}
+
+export function worldFeeSol(): number {
+  return worldFeeLamports() / LAMPORTS_PER_SOL;
+}

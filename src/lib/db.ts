@@ -31,6 +31,7 @@ export interface TownRow {
   care: string; // JSON CareState — the keeper walking the grove
   is_player: number; // 1 = player-raised grove ("u_…" slug)
   owner_token: string; // secret for player-grove care actions
+  creator_wallet: string; // Solana address that created this grove ('' = legacy/none)
   display_name: string; // player grove name
   map_version: number; // bumped when the canonical grove layout changes
   quests: string; // JSON QuestState — coins, claimed quests, care counters (player groves)
@@ -119,6 +120,17 @@ function migrate(d: DatabaseSync): void {
       multiplier REAL NOT NULL DEFAULT 0,
       updated_at INTEGER NOT NULL DEFAULT 0
     );
+
+    -- World-creation fee payments (anti-farm). One on-chain payment = one
+    -- new world; the signature is the primary key so a payment can't be
+    -- reused to mint multiple groves.
+    CREATE TABLE IF NOT EXISTS fee_payments (
+      signature TEXT PRIMARY KEY,
+      wallet TEXT NOT NULL,
+      slug TEXT NOT NULL DEFAULT '',
+      lamports INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL DEFAULT 0
+    );
   `);
 
   // Baseline the accrual cursor to the current window so the first settle
@@ -148,6 +160,7 @@ function migrate(d: DatabaseSync): void {
     ['display_name', "ALTER TABLE towns ADD COLUMN display_name TEXT NOT NULL DEFAULT ''"],
     ['map_version', 'ALTER TABLE towns ADD COLUMN map_version INTEGER NOT NULL DEFAULT 0'],
     ['quests', "ALTER TABLE towns ADD COLUMN quests TEXT NOT NULL DEFAULT '{}'"],
+    ['creator_wallet', "ALTER TABLE towns ADD COLUMN creator_wallet TEXT NOT NULL DEFAULT ''"],
     ['payout_wallet', "ALTER TABLE towns ADD COLUMN payout_wallet TEXT NOT NULL DEFAULT ''"],
     ['pending_lamports', 'ALTER TABLE towns ADD COLUMN pending_lamports INTEGER NOT NULL DEFAULT 0'],
     ['last_claim_at', 'ALTER TABLE towns ADD COLUMN last_claim_at INTEGER NOT NULL DEFAULT 0'],
@@ -438,7 +451,7 @@ export function listPlayerTowns(limit = 24): TownRow[] {
 }
 
 /** Birth a player grove: a fresh clearing, two little ones, your hands. */
-export function createPlayerTown(displayName: string): { slug: string; token: string } {
+export function createPlayerTown(displayName: string, creatorWallet = ''): { slug: string; token: string } {
   const slug = `u_${crypto.randomBytes(4).toString('hex')}`;
   const token = crypto.randomBytes(16).toString('hex');
   const name = displayName.trim().slice(0, 20) || 'My Grove';
@@ -457,16 +470,40 @@ export function createPlayerTown(displayName: string): { slug: string; token: st
   db()
     .prepare(
       `INSERT INTO towns (slug, tick, last_tick_at, created_at, views, tilemap, traits, buildings, agents, placements,
-                          is_player, owner_token, display_name, map_version,
+                          is_player, owner_token, creator_wallet, payout_wallet, display_name, map_version,
                           population, food, energy, compute, knowledge, happiness, stability, autonomy, weirdness)
-       VALUES (?, 0, ?, ?, 0, ?, ?, ?, ?, ?, 1, ?, ?, ${MAP_VERSION}, ?, 90, 80, 4, 2, 70, 75, 3, 3)`
+       VALUES (?, 0, ?, ?, 0, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ${MAP_VERSION}, ?, 90, 80, 4, 2, 70, 75, 3, 3)`
     )
     .run(
       slug, t, t, tilemap,
       JSON.stringify(p.traits), JSON.stringify(buildings), JSON.stringify(founders), JSON.stringify(placements),
-      token, name, founders.length
+      // The creating wallet also becomes the default payout wallet, so a
+      // grove starts earning to its maker without a separate link step.
+      token, creatorWallet, creatorWallet, name, founders.length
     );
   return { slug, token };
+}
+
+/** How many groves a wallet has created — drives the free-world allowance. */
+export function countWorldsByCreator(wallet: string): number {
+  if (!wallet) return 0;
+  return (
+    db().prepare('SELECT COUNT(*) AS c FROM towns WHERE is_player = 1 AND creator_wallet = ?').get(wallet) as {
+      c: number;
+    }
+  ).c;
+}
+
+/** True if this payment signature has already been spent on a world. */
+export function feePaymentExists(signature: string): boolean {
+  return !!db().prepare('SELECT 1 FROM fee_payments WHERE signature = ?').get(signature);
+}
+
+/** Record a consumed fee payment so it can never be reused. */
+export function recordFeePayment(signature: string, wallet: string, slug: string, lamports: number): void {
+  db()
+    .prepare('INSERT OR IGNORE INTO fee_payments (signature, wallet, slug, lamports, created_at) VALUES (?, ?, ?, ?, ?)')
+    .run(signature, wallet, slug, lamports, now());
 }
 
 export function saveTown(t: TownRow): void {

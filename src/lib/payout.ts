@@ -40,6 +40,21 @@ export function payoutAddress(): string {
   return payer().publicKey.toBase58();
 }
 
+/**
+ * Where world-creation fees are sent. Defaults to the treasury (so fees
+ * top up the reward pool), overridable with FEE_WALLET. Public + safe to
+ * expose to the client; needs no secret if FEE_WALLET is set explicitly.
+ */
+export function feeWalletAddress(): string {
+  const explicit = (process.env.FEE_WALLET || '').trim();
+  if (explicit) return explicit;
+  try {
+    return payoutAddress();
+  } catch {
+    return ''; // no treasury configured (e.g. local dev) — paid creation off
+  }
+}
+
 /** Current treasury balance in lamports. */
 export async function treasuryLamports(): Promise<number> {
   return connection().getBalance(payer().publicKey);

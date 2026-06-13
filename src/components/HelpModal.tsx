@@ -56,6 +56,13 @@ export function HelpButton({ compact = false }: { compact?: boolean }) {
                 — then the feeding, playing and bathing buttons are yours, and nobody saves your little
                 ones but you. Every grove people raise is public: anyone can come and watch yours.
               </p>
+              <p className="help-own">
+                <b>And you can get paid for it.</b> A thriving grove earns coins; hold the{' '}
+                <b>$THRONG</b> token and those coins become a share of a real daily <b>SOL</b> pool you can
+                claim to your wallet every 12 hours. Connect a wallet on the{' '}
+                <Link href="/dashboard" className="help-own-link" onClick={() => setOpen(false)}>dashboard</Link>{' '}
+                to see your tier and claim. (Each wallet gets 2 free groves; more cost 0.3 SOL each, to stop farming.)
+              </p>
               <p className="help-fine">1 day passes every 3 real minutes — even while you’re away. Days 0–40 of the six AI groves are seeded founding history.</p>
             </div>
           </div>

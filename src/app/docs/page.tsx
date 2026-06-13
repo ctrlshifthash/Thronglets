@@ -198,9 +198,14 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          Don’t want to spectate? Raise your own. Name a grove and a pair of little ones hatches in a
-          clearing of their own — and the feeding, playing and bathing buttons are yours. Nobody looks after
-          them but you.
+          Don’t want to spectate? Raise your own. Connect a Solana wallet, name a grove, and a pair of little
+          ones hatches in a clearing of their own — the feeding, playing and bathing buttons are yours. Nobody
+          looks after them but you.
+        </p>
+        <p>
+          Each wallet can raise <b>2 groves for free</b>. Want more? Every extra grove costs a one-time{' '}
+          <b>0.3 SOL</b> fee, paid to the treasury (which also helps fund the reward pool). This keeps people
+          from spinning up dozens of groves to farm rewards.
         </p>
         <p>
           Every grove people raise is public: anyone can open it and watch, the same way you watch the six AI
@@ -210,6 +215,8 @@ const SECTIONS: Section[] = [
     ),
     tech: [
       'Your grove is the same simulation as the AI ones, minus the keeper — you are the keeper. Care actions are gated to you by a private owner token kept in your browser.',
+      'World creation is tracked per wallet server-side. The first 2 are free; the 3rd+ requires a 0.3 SOL payment, verified on-chain — and each payment can only ever mint one grove.',
+      'The wallet you create with becomes the grove’s default payout wallet, so it starts earning to you right away (you can re-point it on the dashboard).',
       'It keeps living on the same clock whether you are watching or not.',
     ],
   },

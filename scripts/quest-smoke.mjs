@@ -16,7 +16,7 @@ const { slug, token } = createPlayerTown('Quest Test');
 ok(typeof token === 'string' && token.length > 0, 'grove has an owner token');
 let town = catchUp(getTown(slug));
 let quests = evaluateQuests(questContextOf(town));
-ok(quests.length === 10, `10 quests defined (got ${quests.length})`);
+ok(quests.length === 19, `19 quests defined (got ${quests.length})`);
 ok(parseQuestState(town.quests).coins === 0, 'starts at 0 coins');
 ok(quests.every((q) => !q.claimed), 'nothing claimed yet');
 
