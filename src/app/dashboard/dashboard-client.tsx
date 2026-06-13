@@ -1,26 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { CLAIMS_PER_DAY, TIERS, TOKEN_MINT, TOKEN_PUMP, TOKEN_SOLSCAN } from '@/lib/rewards';
 
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="dash-stat">
-      <div className="dash-stat-label px">{label}</div>
-      <div className="dash-stat-value px">{value}</div>
-      {hint && <div className="dash-stat-hint">{hint}</div>}
-    </div>
-  );
-}
+// Privy + wallet code is browser-only — load it client-side to avoid SSR issues.
+const WalletSection = dynamic(() => import('./wallet-section').then((m) => m.WalletSection), {
+  ssr: false,
+  loading: () => <div className="dash-note">Loading wallet…</div>,
+});
 
 export function DashboardClient() {
-  const [note, setNote] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-
-  // Wallet connect + balance + claim are wired once Privy credentials and a
-  // payout wallet are configured. Until then this is read-only / a preview.
-  const connect = () => setNote('Wallet connect (Solana via Privy) is being set up — it goes live shortly.');
 
   const copyCa = () => {
     void navigator.clipboard?.writeText(TOKEN_MINT).then(() => {
@@ -44,34 +36,11 @@ export function DashboardClient() {
         <h1 className="dash-h1 px">Your Grove, Your Rewards</h1>
         <p className="dash-lede">
           Raise a thriving grove to earn coins. Hold <b>$THRONG</b> and those coins become a share of the daily
-          reward pool — paid out in real funds, claimable twice a day.
+          reward pool — paid out in real funds, claimable twice a day. Connect your Solana wallet to see your
+          tier.
         </p>
 
-        {/* Connect */}
-        <div className="dash-connect">
-          <button className="dash-connect-btn px" onClick={connect}>Connect Wallet</button>
-          <span className="dash-connect-sub">Solana · Privy</span>
-        </div>
-        {note && <div className="dash-note">{note}</div>}
-
-        {/* Your stats (populate once a wallet is connected) */}
-        <div className="dash-grid">
-          <Stat label="HOLDING" value="—" hint="connect wallet" />
-          <Stat label="TIER" value="—" hint="based on how much you hold" />
-          <Stat label="MULTIPLIER" value="—" hint="scales your share" />
-          <Stat label="COINS EARNED" value="—" hint="from quests & upkeep" />
-          <Stat label="QUESTS DONE" value="—" hint="across your groves" />
-          <Stat label="PENDING REWARD" value="—" hint="your share of today's pool" />
-        </div>
-
-        {/* Claim */}
-        <div className="dash-claim">
-          <div className="dash-claim-info">
-            <div className="dash-claim-title px">CLAIM REWARDS</div>
-            <div className="dash-claim-sub">Up to {CLAIMS_PER_DAY}× per day · next claim in —:—:—</div>
-          </div>
-          <button className="dash-claim-btn px" disabled title="Connect a wallet first">CLAIM</button>
-        </div>
+        <WalletSection />
 
         {/* Tiers */}
         <section className="dash-section">

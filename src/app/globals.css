@@ -987,6 +987,36 @@ a {
   margin: 10px 0 0;
 }
 
+.dash-wallet {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-wallet-addr {
+  font-size: 9px;
+  color: var(--parchment);
+  background: rgba(199, 166, 255, 0.08);
+  border: 1px solid rgba(199, 166, 255, 0.2);
+  border-radius: 6px;
+  padding: 9px 12px;
+}
+
+.dash-disconnect {
+  font-size: 7px;
+  color: var(--mist-dim);
+  background: none;
+  border: 1px solid rgba(199, 166, 255, 0.16);
+  border-radius: 5px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.dash-disconnect:hover {
+  color: var(--parchment);
+  border-color: var(--whisper-bright);
+}
+
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
