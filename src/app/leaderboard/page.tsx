@@ -38,8 +38,9 @@ export default function LeaderboardPage() {
         <p className="dash-eyebrow px">TOP EARNERS</p>
         <h1 className="dash-h1 px">Leaderboard</h1>
         <p className="dash-lede">
-          The groves earning the most from the daily $THRONG reward pool — by real SOL claimed. Coins show how
-          hard each grove is being played. Wallets are shortened for privacy.
+          The groves earning the most from the daily $THRONG reward pool — total SOL earned, whether it’s been
+          claimed yet or is still pending. Coins show how hard each grove is being played. Wallets are shortened
+          for privacy.
         </p>
 
         {rows.length === 0 ? (
@@ -62,8 +63,8 @@ export default function LeaderboardPage() {
                 <span className="lb-keeper px">{shortWallet(r.wallet)}</span>
                 <span className="lb-num lb-coins">{fmtCoins(r.coins)}</span>
                 <span className="lb-num lb-earned px">
-                  {sol(r.earnedLamports)}
-                  {r.pendingLamports > 0 && <span className="lb-pending"> +{sol(r.pendingLamports)} pending</span>}
+                  {sol(r.earnedLamports + r.pendingLamports)}
+                  {r.pendingLamports > 0 && r.earnedLamports === 0 && <span className="lb-pending"> pending</span>}
                 </span>
               </div>
             ))}

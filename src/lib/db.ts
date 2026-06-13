@@ -517,10 +517,10 @@ export function leaderboardRows(limit = 50): LeaderboardEntry[] {
       pendingLamports: r.pending_lamports || 0,
       coins: parseQuestState(r.quests).coins,
     }))
+    // Rank by total earned (claimed + still-pending), then by coins.
     .sort(
       (a, b) =>
-        b.earnedLamports - a.earnedLamports ||
-        b.pendingLamports - a.pendingLamports ||
+        b.earnedLamports + b.pendingLamports - (a.earnedLamports + a.pendingLamports) ||
         b.coins - a.coins
     )
     .slice(0, limit);
