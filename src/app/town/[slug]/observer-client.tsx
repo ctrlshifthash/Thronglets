@@ -8,7 +8,7 @@ import { HelpButton } from '@/components/HelpModal';
 import { MusicToggle } from '@/components/MusicToggle';
 import { Starfield } from '@/components/Starfield';
 import type { ObserverApi } from '@/game/ObserverScene';
-import type { EvaluatedQuest } from '@/lib/quests';
+import { COIN_CAP, type EvaluatedQuest } from '@/lib/quests';
 import { observeTown, type ObserveHandle } from '@/lib/realtime-client';
 import type {
   AgentSnapshot,
@@ -578,7 +578,7 @@ export function ObserverClient({ slug }: { slug: string }) {
                 <h2 className="px panel-title" style={{ border: 'none', padding: 0, margin: 0 }}>QUESTS</h2>
                 <button className="ai-close" onClick={() => setShowQuests(false)}>✕</button>
               </div>
-              <div className="quest-balance px"><span className="coin">◎</span> {town.coins ?? 0} coins</div>
+              <div className="quest-balance px"><span className="coin">◎</span> {town.coins ?? 0} <span className="quest-cap">/ {COIN_CAP}</span></div>
               <div className="quest-list">
                 {town.quests.map((q) => (
                   <div key={q.id} className={`quest-row${q.claimed ? ' done' : q.done ? ' ready' : ''}`}>
@@ -604,7 +604,7 @@ export function ObserverClient({ slug }: { slug: string }) {
                   </div>
                 ))}
               </div>
-              <p className="quest-fine">Coins are an in-game currency for now — more uses coming. Only this grove’s keeper earns them.</p>
+              <p className="quest-fine">Coins are an in-game currency for now — more uses coming. Only this grove’s keeper earns them, up to {COIN_CAP} per grove.</p>
             </div>
           </div>
         )}

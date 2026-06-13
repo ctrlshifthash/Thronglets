@@ -7,6 +7,14 @@
 // client. Rewards are paid in coins only.
 // ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Hard ceiling on the coins a single grove can ever hold. Quests are
+ * one-time, so total earnings are already bounded — this caps it firmly
+ * and future-proofs new coin sources. It's the per-grove payout unit;
+ * per-wallet limits come later, once groves are tied to accounts.
+ */
+export const COIN_CAP = 2000;
+
 export type CareKey = 'feed' | 'play' | 'bathe' | 'heal' | 'soothe';
 
 /** Persisted per player grove (towns.quests JSON). */

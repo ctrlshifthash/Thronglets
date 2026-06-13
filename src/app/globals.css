@@ -1616,6 +1616,10 @@ a {
   gap: 6px;
 }
 
+.quest-cap {
+  color: var(--ink-faint);
+}
+
 .quest-list {
   overflow-y: auto;
   display: flex;

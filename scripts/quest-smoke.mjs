@@ -6,7 +6,7 @@ for (const s of ['', '-wal', '-shm']) { try { rmSync(`./data/quest-smoke.db${s}`
 
 const { createPlayerTown, getTown, saveQuestState } = await import('../src/lib/db.ts');
 const { catchUp, questContextOf } = await import('../src/lib/sim.ts');
-const { evaluateQuests, parseQuestState, questById } = await import('../src/lib/quests.ts');
+const { evaluateQuests, parseQuestState, questById, COIN_CAP } = await import('../src/lib/quests.ts');
 
 let fails = 0;
 const ok = (cond, msg) => { if (!cond) { fails++; console.log('  FAIL:', msg); } else console.log('  ok:', msg); };
@@ -39,7 +39,7 @@ const claim = (id) => {
   if (state.claimed.includes(id)) return { error: 'already' };
   if (def.progress(ctx) < def.target) return { error: 'unfinished' };
   state.claimed.push(id);
-  state.coins += def.reward;
+  state.coins = Math.min(COIN_CAP, state.coins + def.reward); // mirrors the claim route's cap
   saveQuestState(slug, state);
   return { coins: state.coins, reward: def.reward };
 };
@@ -59,6 +59,14 @@ ok(r3.error === 'unfinished', 'cannot claim an unfinished quest');
 town = catchUp(getTown(slug));
 ok(parseQuestState(town.quests).coins === 100, 'coin balance persists');
 ok(evaluateQuests(questContextOf(town)).find((q) => q.id === 'baths').claimed, 'quest now reads as claimed');
+
+// 7. The per-grove cap clamps a payout that would overflow it.
+const near = parseQuestState(getTown(slug).quests);
+near.coins = COIN_CAP - 50;
+near.cares.heal = 10; // completes "Field Medic" (150 reward)
+saveQuestState(slug, near);
+const capped = claim('heals');
+ok(capped.coins === COIN_CAP, `balance is capped at ${COIN_CAP} (got ${capped.coins})`);
 
 console.log(fails === 0 ? '\nQUEST SMOKE PASSED' : `\n${fails} FAILURES`);
 process.exit(fails === 0 ? 0 : 1);

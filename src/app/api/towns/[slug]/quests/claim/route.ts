@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getTown, insertEvent, saveQuestState } from '@/lib/db';
-import { evaluateQuests, parseQuestState, questById } from '@/lib/quests';
+import { COIN_CAP, evaluateQuests, parseQuestState, questById } from '@/lib/quests';
 import { catchUp, questContextOf } from '@/lib/sim';
 
 export const dynamic = 'force-dynamic';
@@ -34,15 +34,18 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
     }
 
     qs.claimed.push(quest.id);
-    qs.coins += quest.reward;
+    // Per-grove coin ceiling — never pay past the cap.
+    const granted = Math.min(quest.reward, Math.max(0, COIN_CAP - qs.coins));
+    qs.coins = Math.min(COIN_CAP, qs.coins + quest.reward);
     saveQuestState(slug, qs);
     town.quests = JSON.stringify(qs);
-    insertEvent(slug, town.tick, 'care', `★ Quest complete: ${quest.title} (+${quest.reward} coins).`);
+    insertEvent(slug, town.tick, 'care', `★ Quest complete: ${quest.title} (+${granted} coins).`);
 
     return NextResponse.json({
       claimed: quest.id,
-      reward: quest.reward,
+      reward: granted,
       coins: qs.coins,
+      capped: qs.coins >= COIN_CAP,
       quests: evaluateQuests(questContextOf(town)),
     });
   } catch (err) {
